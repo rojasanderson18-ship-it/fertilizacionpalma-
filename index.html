@@ -1455,17 +1455,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   function llenarSelects() {
-    /* Lotes */
-    document.querySelectorAll('select').forEach(function(sel){
-      var id = sel.id || '';
-      if(id.indexOf('lote') !== -1) {
-        sel.innerHTML = '<option value="">— Seleccionar —</option>';
-        LOTES.forEach(function(l){ sel.innerHTML += '<option>'+l+'</option>'; });
-      }
-      if(id.indexOf('prod') !== -1) {
-        sel.innerHTML = '<option value="">— Seleccionar —</option>';
-        PRODUCTOS.forEach(function(p){ sel.innerHTML += '<option>'+p+'</option>'; });
-      }
+    /* Solo llenar selects que NO tienen optgroups ya (los de finca tienen optgroups en HTML) */
+    var loteIds   = ['plan-lote']; // plan-lote no tiene optgroups, los demás sí
+    var prodIds   = ['sal-prod','apl-prod','dev-prod','plan-prod','ent-prod','adj-prod'];
+
+    loteIds.forEach(function(id) {
+      var sel = document.getElementById(id);
+      if(!sel) return;
+      sel.innerHTML = '<option value="">— Seleccionar lote —</option>';
+      // Agrupar por finca
+      var f1 = LOTES.filter(function(l){ var m=l.match(/Lote (\d+)/); return m&&parseInt(m[1])<=18; });
+      var f2 = LOTES.filter(function(l){ var m=l.match(/Lote (\d+)/); return m&&parseInt(m[1])>=19&&parseInt(m[1])<=41; });
+      var f3 = LOTES.filter(function(l){ var m=l.match(/Lote (\d+)/); return m&&parseInt(m[1])>=42; });
+      var noNum = LOTES.filter(function(l){ return !l.match(/Lote \d+/); });
+      if(noNum.length) { var og0=document.createElement('optgroup'); og0.label='Híbridos'; noNum.forEach(function(l){var o=document.createElement('option');o.textContent=l;og0.appendChild(o);}); sel.appendChild(og0); }
+      if(f1.length) { var og1=document.createElement('optgroup'); og1.label='🌿 Finca 1 (1–18)'; f1.forEach(function(l){var o=document.createElement('option');o.textContent=l;og1.appendChild(o);}); sel.appendChild(og1); }
+      if(f2.length) { var og2=document.createElement('optgroup'); og2.label='🌿 Finca 2 (19–41)'; f2.forEach(function(l){var o=document.createElement('option');o.textContent=l;og2.appendChild(o);}); sel.appendChild(og2); }
+      if(f3.length) { var og3=document.createElement('optgroup'); og3.label='🌿 Finca 3 (42–58)'; f3.forEach(function(l){var o=document.createElement('option');o.textContent=l;og3.appendChild(o);}); sel.appendChild(og3); }
+    });
+
+    prodIds.forEach(function(id) {
+      var sel = document.getElementById(id);
+      if(!sel) return;
+      sel.innerHTML = '<option value="">— Seleccionar —</option>';
+      PRODUCTOS.forEach(function(p){ sel.innerHTML += '<option>'+p+'</option>'; });
     });
   }
 
