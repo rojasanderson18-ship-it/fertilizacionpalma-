@@ -1366,7 +1366,7 @@ let gasUrl    = '';
 /* ────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function() {
 
-  gasUrl = localStorage.getItem('fpg_gas') || '';
+  gasUrl = localStorage.getItem('fpg_gas') || 'https://script.google.com/macros/s/AKfycbyh14t3fntoKjSZTcTLYor_J8zRgcpcjPK7PE89RmL6db1EqeolvcCumJDD8u3rwCsAew/exec';
 
   /* ── Toast ──────────────────────────── */
   function toast(msg, tipo, ms) {
@@ -1447,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', function() {
     actualizarOnline();
     window.addEventListener('online',  actualizarOnline);
     window.addEventListener('offline', actualizarOnline);
-    if(g('gas-url')) g('gas-url').value = gasUrl;
+    if(g('gas-url')) g('gas-url').value = gasUrl || 'https://script.google.com/macros/s/AKfycbyh14t3fntoKjSZTcTLYor_J8zRgcpcjPK7PE89RmL6db1EqeolvcCumJDD8u3rwCsAew/exec';
     var p = PERMISOS[rolActivo];
     var primerMod = (p && p.nav.length > 0) ? p.nav[0] : 'dashboard';
     navTo(primerMod);
