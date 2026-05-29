@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<meta name="theme-color" content="#0d1117"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<title>Fertiliza · Palma Grande</title>
+<link rel="manifest" href="manifest.json"/>
+<style>
+:root {
+  --bg:        #0d1117;
+  --bg2:       #131920;
+  --bg3:       #1a2130;
+  --surface:   rgba(255,255,255,.04);
+  --surface2:  rgba(255,255,255,.07);
+  --border:    rgba(255,255,255,.07);
+  --border2:   rgba(255,255,255,.12);
+  --green:     #4ade80;
+  --green-bg:  rgba(74,222,128,.08);
+  --green-bg2: rgba(74,222,128,.15);
+  --green-dk:  #16a34a;
+  --amber:     #fbbf24;
+  --amber-bg:  rgba(251,191,36,.08);
+  --red:       #f87171;
+  --red-bg:    rgba(248,113,113,.08);
+  --blue:      #60a5fa;
+  --blue-bg:   rgba(96,165,250,.08);
+  --txt:       #ffffff;
+  --txt2:      rgba(255,255,255,.5);
+  --txt3:      rgba(255,255,255,.25);
+  --radius:    16px;
+  --radius-sm: 12px;
+  --radius-xs: 10px;
+  --header-h:  58px;
+  --sw:        270px;
+  --ff: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100dvh;-webkit-font-smoothing:antialiased}
+
+.screen{display:none !important}
+.screen.active{display:block !important}
+#screen-login.active{display:flex !important}
+
+/* ── LOGIN ───────────────────────────────── */
+#screen-login{
+  min-height:100dvh;
+  background:var(--bg);
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.login-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(74,222,128,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,222,128,.03) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+.login-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,.07) 0%,transparent 65%);
+  top:-120px;left:-120px;pointer-events:none;
+}
+.login-card{
+  position:relative;z-index:1;
+  width:min(380px,94vw);
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:24px;padding:36px 28px 32px;
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo-leaf{
+  width:40px;height:40px;border-radius:50% 12px 50% 12px;
+  background:var(--green-dk);display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.logo-name{font-size:26px;font-weight:800;letter-spacing:-0.5px;color:var(--txt)}
+.logo-name span{color:var(--green)}
+.login-tagline{
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--txt3);margin-bottom:28px;padding-left:2px;font-weight:600;
+}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.role-btn{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:all .18s;font-family:var(--ff);
+}
+.role-btn .ri{font-size:22px;line-height:1}
+.role-btn .rn{font-size:11px;font-weight:700;color:var(--txt2);letter-spacing:.3px}
+.role-btn.active{background:var(--green-bg);border-color:var(--green)}
+.role-btn.active .rn{color:var(--green)}
+.role-btn:not(.active):hover{border-color:var(--border2);background:var(--surface2)}
+.pin-track{
+  background:rgba(0,0,0,.4);border:1px solid var(--border2);border-radius:12px;
+  padding:16px;margin-bottom:14px;display:flex;align-items:center;
+  justify-content:center;gap:16px;min-height:58px;
+}
+.pd{width:12px;height:12px;border-radius:50%;background:var(--border2);transition:all .18s}
+.pd.on{background:var(--green);box-shadow:0 0 10px rgba(74,222,128,.5)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nk{
+  height:56px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--txt);font-size:17px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;-webkit-tap-highlight-color:transparent;font-family:var(--ff);
+}
+.nk:active{background:var(--surface2);transform:scale(.95)}
+.nk.del{color:var(--txt3);font-size:15px}
+.nk.ok{background:var(--green-dk);border-color:var(--green);color:#fff}
+.login-err{text-align:center;color:var(--red);font-size:11px;margin-top:12px;min-height:18px;font-weight:600}
+
+/* ── HEADER ───────────────────────────────── */
+.app-header{
+  position:fixed;top:0;left:0;right:0;height:var(--header-h);
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:12px;z-index:100;
+}
+.menu-btn{
+  width:36px;height:36px;background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;gap:5px;justify-content:center;
+  padding:4px;border-radius:8px;transition:background .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.menu-btn span{height:2px;background:var(--txt2);border-radius:1px;display:block;transition:width .2s}
+.menu-btn span:nth-child(2){width:70%}
+.menu-btn:hover{background:var(--surface)}
+.menu-btn:hover span:nth-child(2){width:100%}
+.header-mid{flex:1}
+.header-brand{font-size:14px;font-weight:800;color:var(--txt);letter-spacing:.3px}
+.header-brand span{color:var(--green)}
+.header-module{font-size:11px;color:var(--txt3);font-weight:500;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+.online-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--txt3);
+  transition:all .3s;flex-shrink:0;
+}
+.online-dot.online{background:var(--green);box-shadow:0 0 8px rgba(74,222,128,.6)}
+.online-dot.offline{background:var(--amber)}
+.online-dot.syncing{background:var(--blue);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.role-pill{
+  background:var(--surface2);border:1px solid var(--border2);color:var(--txt2);
+  padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+}
+
+/* ── SIDEBAR ─────────────────────────────── */
+.sidebar{
+  position:fixed;top:0;left:0;width:var(--sw);height:100dvh;
+  background:var(--bg2);border-right:1px solid var(--border);
+  z-index:200;transform:translateX(calc(-1 * var(--sw)));
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:199;backdrop-filter:blur(3px);
+}
+.sidebar-overlay.active{display:block}
+.sidebar-head{
+  padding:24px 20px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sidebar-brand{font-size:18px;font-weight:800;color:var(--txt)}
+.sidebar-brand span{color:var(--green)}
+.sidebar-close{
+  background:none;border:none;color:var(--txt3);font-size:16px;
+  cursor:pointer;width:28px;height:28px;display:flex;align-items:center;
+  justify-content:center;border-radius:6px;transition:all .15s;
+}
+.sidebar-close:hover{background:var(--surface);color:var(--txt)}
+.nav-list{list-style:none;padding:10px 0;flex:1}
+.nav-sep{
+  padding:18px 20px 5px;font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--txt3);
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:11px 20px;
+  color:var(--txt2);text-decoration:none;font-size:13px;font-weight:600;
+  transition:all .15s;border-left:2px solid transparent;
+}
+.nav-item:hover{color:var(--txt);background:var(--surface)}
+.nav-item.active{color:var(--green);background:var(--green-bg);border-left-color:var(--green)}
+.nav-ic{font-size:15px;opacity:.6;width:18px;text-align:center}
+.nav-item.active .nav-ic{opacity:1}
+.sidebar-foot{
+  padding:14px 20px;border-top:1px solid var(--border);
+  font-size:10px;color:var(--txt3);display:flex;align-items:center;gap:8px;font-weight:500;
+}
+
+/* ── CONTENT ─────────────────────────────── */
+.content-area{margin-top:var(--header-h);padding:18px 16px 36px;min-height:calc(100dvh - var(--header-h))}
+.module{display:none}
+.module.active{display:block;animation:fu .22s ease}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.sec-lbl{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--txt3);margin:24px 0 10px;display:flex;align-items:center;gap:10px;
+}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── KPI ────────────────────────────────── */
+.kpi-hero{
+  background:var(--green-bg);border:1px solid rgba(74,222,128,.2);
+  border-radius:var(--radius);padding:18px;margin-bottom:10px;
+  display:flex;align-items:center;gap:16px;
+}
+.kpi-hero-icon{
+  width:50px;height:50px;background:var(--green-bg2);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
+}
+.kpi-hero-val{font-size:36px;font-weight:800;color:var(--txt);letter-spacing:-1.5px;line-height:1}
+.kpi-hero-lbl{font-size:11px;color:rgba(74,222,128,.7);font-weight:700;margin-top:3px;letter-spacing:.5px}
+.kpi-hero-sub{font-size:10px;color:var(--txt3);margin-top:2px}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px 14px;
+}
+.kpi-card.amber{border-color:rgba(251,191,36,.2);background:var(--amber-bg)}
+.kpi-card.blue{border-color:rgba(96,165,250,.2);background:var(--blue-bg)}
+.kpi-card.red{border-color:rgba(248,113,113,.2);background:var(--red-bg)}
+.kv{font-size:26px;font-weight:800;color:var(--txt);line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.kpi-card.amber .kv{color:var(--amber)}
+.kpi-card.blue .kv{color:var(--blue)}
+.kpi-card.red .kv{color:var(--red)}
+.kl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3)}
+
+.prog-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;
+}
+.prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prog-title{font-size:12px;font-weight:600;color:var(--txt2)}
+.prog-pct{font-size:20px;font-weight:800;color:var(--green)}
+.prog-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:var(--green);border-radius:3px;transition:width .5s ease}
+.prog-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-weight:500}
+
+.alert-item{
+  display:flex;align-items:flex-start;gap:10px;padding:11px 14px;
+  border-radius:10px;margin-bottom:6px;font-size:12px;font-weight:500;border:1px solid;
+}
+.alert-item .adot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;margin-top:3px}
+.a-warn{background:var(--amber-bg);border-color:rgba(251,191,36,.25);color:var(--amber)}
+.a-crit{background:var(--red-bg);border-color:rgba(248,113,113,.25);color:var(--red)}
+.a-ok{background:var(--green-bg);border-color:rgba(74,222,128,.2);color:rgba(74,222,128,.8)}
+
+/* ── RECORDS ────────────────────────────── */
+.records-list{display:flex;flex-direction:column;gap:6px}
+.rec{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px 15px;
+  display:flex;flex-direction:column;gap:5px;animation:fu .2s ease;
+  transition:border-color .15s;
+}
+.rec:hover{border-color:var(--border2)}
+.rec.pending{border-left:2px solid var(--amber)}
+.rec-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.rec-main{font-size:13px;font-weight:700;color:var(--txt)}
+.badge{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
+  white-space:nowrap;flex-shrink:0;font-family:var(--mono);
+}
+.b-green{background:var(--green-bg2);color:#16a34a}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-gray{background:var(--surface2);color:var(--txt2)}
+.rec-sub{font-size:11px;color:var(--txt2);font-weight:500}
+.rec-meta{font-size:10px;color:var(--txt3);display:flex;align-items:center;gap:6px;font-family:var(--mono)}
+.sync-ok{color:rgba(74,222,128,.6)}
+.sync-pend{color:var(--amber)}
+
+/* ── FORM CARD ──────────────────────────── */
+.form-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 18px;margin-bottom:14px;
+}
+.fc-title{
+  font-size:16px;font-weight:800;color:var(--txt);
+  margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;letter-spacing:-.3px;
+}
+.fc-icon{
+  width:32px;height:32px;border-radius:10px;background:var(--green-bg2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.frow{margin-bottom:14px}
+.frow label{
+  display:block;font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--txt3);margin-bottom:6px;
+}
+.frow input,.frow select,.frow textarea{
+  width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border2);
+  border-radius:var(--radius-xs);padding:11px 14px;color:var(--txt);
+  font-family:var(--ff);font-size:13px;outline:none;
+  transition:border-color .18s,background .18s;-webkit-appearance:none;
+  appearance:none;
+}
+.frow select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff40' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+}
+.frow input:focus,.frow select:focus,.frow textarea:focus{
+  border-color:var(--green);background:rgba(0,0,0,.5);
+  box-shadow:0 0 0 3px rgba(74,222,128,.1);
+}
+.frow textarea{resize:vertical;min-height:78px}
+.frow .readonly{background:rgba(0,0,0,.2);color:var(--txt3);border-color:var(--border);cursor:default}
+.frow .hi{background:var(--green-bg) !important;border-color:rgba(74,222,128,.25) !important;color:var(--green) !important;font-family:var(--mono) !important;font-weight:700 !important;font-size:15px !important}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.radio-grp{display:flex;gap:6px;flex-wrap:wrap}
+.ropt{
+  flex:1;min-width:75px;display:flex;align-items:center;justify-content:center;gap:7px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:var(--radius-xs);
+  padding:10px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--txt2);
+  transition:all .15s;
+}
+.ropt input{display:none}
+.ropt:has(input:checked){background:var(--green-bg);border-color:var(--green);color:var(--green)}
+
+/* ── TOTAL HERO ─────────────────────────── */
+.total-hero{
+  background:var(--green-bg);border:1px solid rgba(74,222,128,.25);border-radius:var(--radius-sm);
+  padding:16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;
+}
+.th-val{font-size:32px;font-weight:800;color:var(--green);letter-spacing:-1px;line-height:1}
+.th-lbl{font-size:9px;color:rgba(74,222,128,.6);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.th-right{text-align:right}
+.th-stock-lbl{font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.th-stock-val{font-size:16px;font-weight:700;color:var(--txt)}
+
+.stock-pill{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 12px;
+  border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px;
+  border:1px solid;font-family:var(--mono);
+}
+.sp-ok{background:var(--green-bg);border-color:rgba(74,222,128,.25);color:rgba(74,222,128,.8)}
+.sp-low{background:var(--red-bg);border-color:rgba(248,113,113,.25);color:var(--red)}
+.sp-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ── CALCS ──────────────────────────────── */
+.calcs-box{
+  background:rgba(0,0,0,.35);border:1px solid var(--border);
+  border-radius:var(--radius-xs);padding:13px 15px;margin-bottom:14px;
+}
+.cl{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;
+}
+.cl:last-child{border-bottom:none}
+.cl span{color:var(--txt3);font-weight:500}
+.cl strong{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--txt)}
+
+.concil-box{
+  background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);
+  border-radius:var(--radius-xs);padding:14px 15px;margin-bottom:14px;
+}
+.concil-head{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.semaforo{
+  text-align:center;padding:9px;border-radius:var(--radius-xs);
+  font-size:11px;font-weight:700;margin-top:10px;font-family:var(--mono);letter-spacing:.5px;
+}
+.sem-verde{background:var(--green-bg);color:var(--green)}
+.sem-amarillo{background:var(--amber-bg);color:var(--amber)}
+.sem-rojo{background:var(--red-bg);color:var(--red)}
+
+/* ── BUTTONS ────────────────────────────── */
+.btn-main{
+  width:100%;padding:15px;background:var(--green-dk);border:1px solid var(--green);
+  border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:var(--ff);letter-spacing:.3px;
+  transition:opacity .15s,transform .1s;-webkit-tap-highlight-color:transparent;
+}
+.btn-main:hover{opacity:.9}
+.btn-main:active{transform:scale(.98)}
+.btn-sec{
+  width:100%;padding:12px;background:transparent;
+  border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:var(--ff);transition:all .15s;
+}
+.btn-sec:hover{border-color:var(--border);color:var(--txt);background:var(--surface)}
+
+/* ── INVENTORY TABS ─────────────────────── */
+.inv-tabs{
+  display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:5px;margin-bottom:14px;
+}
+.inv-tab{
+  flex:1;background:none;border:none;border-radius:var(--radius-sm);
+  padding:10px 6px;font-family:var(--ff);font-size:12px;font-weight:700;
+  cursor:pointer;color:var(--txt3);transition:all .18s;
+}
+.inv-tab.active{background:var(--green-dk);color:#fff;border-color:var(--green)}
+.inv-panel{display:none}
+.inv-panel.active{display:block}
+
+/* ── STOCK ITEMS ────────────────────────── */
+.stock-grid{display:flex;flex-direction:column;gap:8px}
+.si{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  transition:border-color .15s;
+}
+.si:hover{border-color:var(--border2)}
+.si-icon{
+  width:44px;height:44px;border-radius:12px;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+}
+.si-info{flex:1;min-width:0}
+.si-name{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.si-qty{font-size:20px;font-weight:800;color:var(--txt);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.si-qty span{font-size:11px;font-weight:400;color:var(--txt3)}
+.si-bar{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.si-fill{height:100%;border-radius:2px;transition:width .5s}
+.si-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.si-status{
+  font-size:9px;font-weight:800;padding:4px 9px;border-radius:20px;
+  letter-spacing:1px;white-space:nowrap;
+}
+.st-ok{background:var(--green-bg2);color:#16a34a}
+.st-warn{background:var(--amber-bg);color:var(--amber)}
+.st-crit{background:var(--red-bg);color:var(--red)}
+
+/* ── SYNC ───────────────────────────────── */
+.sync-hero{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px 20px;text-align:center;margin-bottom:14px;
+}
+.sync-title{font-size:32px;font-weight:800;color:var(--green);letter-spacing:-1px;margin-bottom:6px}
+.sync-hero h2{font-size:15px;font-weight:700;color:var(--txt);margin-bottom:6px}
+.sync-hero p{font-size:12px;color:var(--txt2);margin-bottom:20px}
+.cnt-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px}
+.cnt-pill{
+  background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+  padding:5px 12px;font-size:10px;font-weight:600;color:var(--txt3);font-family:var(--mono);
+}
+.cnt-pill.pend{border-color:rgba(251,191,36,.3);color:var(--amber);background:var(--amber-bg)}
+.sync-log{
+  text-align:left;margin-top:16px;max-height:180px;overflow-y:auto;
+  font-family:var(--mono);font-size:10px;color:var(--txt3);
+}
+.ll{padding:3px 0;border-bottom:1px solid var(--border)}
+.ll.ok{color:rgba(74,222,128,.7)}
+.ll.err{color:var(--red)}
+
+/* ── EMPTY ──────────────────────────────── */
+.empty{text-align:center;padding:40px 16px;color:var(--txt3);font-size:12px;font-weight:600}
+.empty-icon{font-size:28px;margin-bottom:10px;opacity:.4}
+
+/* ── TOAST ──────────────────────────────── */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(90px);
+  background:var(--bg3);border:1px solid var(--border2);color:var(--txt);
+  padding:12px 22px;border-radius:28px;font-size:13px;font-weight:700;
+  z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  max-width:88vw;text-align:center;backdrop-filter:blur(8px);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);color:var(--green)}
+.toast.error{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4);color:var(--red)}
+.toast.warning{background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.4);color:var(--amber)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+  
+html, body {
+  background: #0d1117 !important;
+  color: #ffffff !important;
+}
+.frow input, .frow select, .frow textarea {
+  color: #ffffff !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.frow input::placeholder { color: rgba(255,255,255,0.3) !important; }
+.frow label { color: rgba(255,255,255,0.4) !important; }
+.frow .readonly, .frow input[readonly] {
+  color: rgba(255,255,255,0.35) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.35) !important;
+}
+.frow .hi {
+  background: rgba(74,222,128,0.12) !important;
+  color: #4ade80 !important;
+  -webkit-text-fill-color: #4ade80 !important;
+}
+.form-card { background: rgba(255,255,255,0.05) !important; }
+.fc-title { color: #ffffff !important; }
+.btn-main { color: #ffffff !important; }
+.nk { color: #ffffff !important; }
+.ropt { color: rgba(255,255,255,0.5) !important; }
+select option { background: #1a2130 !important; color: #ffffff !important; }
+
+
+/* Force all module text visible */
+.module { color: #ffffff !important; }
+.sec-lbl { color: rgba(255,255,255,0.3) !important; }
+.kpi-hero-val { color: #ffffff !important; }
+.kpi-hero-lbl { color: rgba(74,222,128,0.8) !important; }
+.kv { color: #ffffff !important; }
+.kl { color: rgba(255,255,255,0.3) !important; }
+.prog-title { color: rgba(255,255,255,0.5) !important; }
+.prog-pct { color: #4ade80 !important; }
+.prog-meta { color: rgba(255,255,255,0.25) !important; }
+.rec-main { color: #ffffff !important; }
+.rec-sub { color: rgba(255,255,255,0.5) !important; }
+.rec-meta { color: rgba(255,255,255,0.25) !important; }
+.si-name { color: #ffffff !important; }
+.si-qty { color: #ffffff !important; }
+.cl span { color: rgba(255,255,255,0.35) !important; }
+.cl strong { color: #ffffff !important; }
+.concil-head { color: #60a5fa !important; }
+.calcs-box { background: rgba(0,0,0,0.4) !important; }
+.concil-box { background: rgba(96,165,250,0.07) !important; }
+/* Fix login */
+.login-card { background: #131920 !important; }
+.logo-name { color: #ffffff !important; }
+.login-tagline { color: rgba(255,255,255,0.25) !important; }
+.role-btn .rn { color: rgba(255,255,255,0.5) !important; }
+/* Fix sidebar */
+.sidebar { background: #131920 !important; }
+.nav-item { color: rgba(255,255,255,0.5) !important; }
+.nav-item.active { color: #4ade80 !important; }
+.nav-sep { color: rgba(255,255,255,0.2) !important; }
+/* Inventory tabs */
+.inv-tab { color: rgba(255,255,255,0.35) !important; }
+.inv-tab.active { color: #ffffff !important; }
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-grid"></div>
+  <div class="login-glow"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-leaf">🌴</div>
+      <div class="logo-name">Fertili<span>za</span></div>
+    </div>
+    <div class="login-tagline">Palma Grande · Control de Fertilización</div>
+    <div class="role-grid">
+      <button class="role-btn active" data-role="almacen"><span class="ri">📦</span><span class="rn">Almacén</span></button>
+      <button class="role-btn" data-role="supervisor"><span class="ri">👷</span><span class="rn">Supervisor</span></button>
+      <button class="role-btn" data-role="direccion"><span class="ri">📊</span><span class="rn">Dirección</span></button>
+      <button class="role-btn" data-role="consulta"><span class="ri">👁</span><span class="rn">Consulta</span></button>
+    </div>
+    <p id="role-desc" style="text-align:center;font-size:10px;color:rgba(255,255,255,0.35);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;min-height:16px;">Salidas · Devoluciones · Inventario</p>
+    <div class="pin-track">
+      <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
+      <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div><div class="pd" id="pd4"></div>
+    </div>
+    <div class="numpad">
+      <button class="nk" data-k="1">1</button><button class="nk" data-k="2">2</button><button class="nk" data-k="3">3</button>
+      <button class="nk" data-k="4">4</button><button class="nk" data-k="5">5</button><button class="nk" data-k="6">6</button>
+      <button class="nk" data-k="7">7</button><button class="nk" data-k="8">8</button><button class="nk" data-k="9">9</button>
+      <button class="nk del" data-k="C">⌫</button><button class="nk" data-k="0">0</button><button class="nk ok" data-k="OK">✓</button>
+    </div>
+    <p class="login-err" id="login-err"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="screen">
+  <header class="app-header">
+    <button class="menu-btn" id="menu-toggle" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="header-mid">
+      <div class="header-brand">Fertili<span>za</span></div>
+      <div class="header-module" id="hdr-mod">Dashboard</div>
+    </div>
+    <div class="header-right">
+      <div class="online-dot" id="online-dot"></div>
+      <span class="role-pill" id="role-pill">—</span>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-brand">Fertili<span>za</span></span>
+      <button class="sidebar-close" id="sidebar-close">✕</button>
+    </div>
+    <ul class="nav-list">
+      <li><a class="nav-item active" data-mod="dashboard"><span class="nav-ic">◈</span> Dashboard</a></li>
+      <li class="nav-sep">Operaciones</li>
+      <li><a class="nav-item" data-mod="salida"><span class="nav-ic">↑</span> Salida Almacén</a></li>
+      <li><a class="nav-item" data-mod="aplicacion"><span class="nav-ic">◎</span> Aplicación Campo</a></li>
+      <li><a class="nav-item" data-mod="devolucion"><span class="nav-ic">↩</span> Devoluciones</a></li>
+      <li class="nav-sep">Gestión</li>
+      <li><a class="nav-item" data-mod="inventario"><span class="nav-ic">▤</span> Inventario</a></li>
+      <li><a class="nav-item" data-mod="plan"><span class="nav-ic">▦</span> Plan Fertilización</a></li>
+      <li><a class="nav-item" data-mod="novedades"><span class="nav-ic">⚑</span> Novedades</a></li>
+      <li class="nav-sep">Sistema</li>
+      <li><a class="nav-item" data-mod="sync"><span class="nav-ic">⟳</span> Sincronizar</a></li>
+      <li><a class="nav-item" id="logout-btn"><span class="nav-ic">→</span> Cerrar Sesión</a></li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="online-dot" id="online-dot-2" style="width:6px;height:6px"></div>
+      <span id="sidebar-sync-txt">Verificando...</span>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <main class="content-area">
+
+    <!-- DASHBOARD -->
+    <section id="mod-dashboard" class="module active">
+      <div class="kpi-hero">
+        <div class="kpi-hero-icon">🌱</div>
+        <div>
+          <div class="kpi-hero-val" id="kpi-aplicados">0</div>
+          <div class="kpi-hero-lbl">kg aplicados hoy</div>
+          <div class="kpi-hero-sub" id="kpi-aplicados-sub">—</div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kv" id="kpi-despachados">0</div>
+          <div class="kl">kg despachados</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kv" id="kpi-devueltos">0</div>
+          <div class="kl">kg devueltos</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kv" id="kpi-ha">0</div>
+          <div class="kl">ha fertilizadas</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kv" id="kpi-lotes">0</div>
+          <div class="kl">lotes ejecutados</div>
+        </div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-head">
+          <span class="prog-title">Cumplimiento del plan</span>
+          <span class="prog-pct" id="prog-pct">0%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="prog-meta">
+          <span id="prog-apl">0 kg aplicados</span>
+          <span id="prog-meta">Meta: 0 kg</span>
+        </div>
+      </div>
+      <div class="sec-lbl">Alertas</div>
+      <div id="dash-alertas"></div>
+      <div class="sec-lbl">Últimas salidas</div>
+      <div id="dash-salidas" class="records-list"></div>
+      <div class="sec-lbl">Últimas aplicaciones</div>
+      <div id="dash-apls" class="records-list"></div>
+    </section>
+
+    <!-- SALIDA -->
+    <section id="mod-salida" class="module">
+      <div class="form-card">
+        <div class="fc-title"><div class="fc-icon">📦</div>Nueva Salida de Almacén</div>
+        <div class="two-col">
+          <div class="frow"><label>Consecutivo</label><input type="text" id="sal-cons" class="readonly" readonly/></div>
+          <div class="frow"><label>Fecha</label><input type="text" id="sal-fecha" class="readonly" readonly/></div>
+        </div>
+        <div class="frow"><label>Responsable Almacén *</label><input type="text" id="sal-resp" value="Leanis Argumedo"/></div>
+        <div class="frow">
+          <label>Supervisor Solicitante *</label>
+          <select id="sal-sup" onchange="toggleOtroSup()">
+            <option value="">— Seleccionar —</option>
+            <option>Juan Carlos Oviedo</option>
+            <option>Brayan Farid Perez</option>
+            <option>Ing. Luis Fernando</option>
+            <option>Jair Martinez</option>
+            <option>Felipe Fajardo</option>
+            <option value="__otro__">Otro...</option>
+          </select>
+          <input type="text" id="sal-sup-otro" placeholder="Escriba el nombre del supervisor" style="display:none;margin-top:8px"/>
+        </div>
+        <div class="frow"><label>Lote Destino *</label><select id="sal-lote">
+<option value="">— Seleccionar lote —</option>
+<optgroup label="🌿 Finca 1 (Lotes 1A – 18A)">
+<option>Lote 1A (Hibrido)</option>
+<option>Lote 2A (Hibrido)</option>
+<option>Lote 3A (Hibrido)</option>
+<option>Lote 4A (Hibrido)</option>
+<option>Lote 5 (Guineensis)</option>
+<option>Lote 6 (Guineensis)</option>
+<option>Lote 7 (Guineensis)</option>
+<option>Lote 8 (Guineensis)</option>
+<option>Lote 9 (Guineensis)</option>
+<option>Lote 10 (Guineensis)</option>
+<option>Lote 11 (Guineensis)</option>
+<option>Lote 11A (Guineensis)</option>
+<option>Lote 12 (Guineensis)</option>
+<option>Lote 13 (Guineensis)</option>
+<option>Lote 14 (Guineensis)</option>
+<option>Lote 15 (Guineensis)</option>
+<option>Lote 16 (Guineensis)</option>
+<option>Lote 17 (Guineensis)</option>
+<option>Lote 18 (Guineensis)</option>
+<option>Lote 18A (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 2 (Lotes 19 – 41)">
+<option>Lote 19 (Guineensis)</option>
+<option>Lote 20 (Guineensis)</option>
+<option>Lote 21 (Guineensis)</option>
+<option>Lote 22 (Guineensis)</option>
+<option>Lote 23 (Guineensis)</option>
+<option>Lote 24 (Guineensis)</option>
+<option>Lote 25 (Guineensis)</option>
+<option>Lote 26 (Guineensis)</option>
+<option>Lote 27 (Guineensis)</option>
+<option>Lote 28 (Guineensis)</option>
+<option>Lote 29 (Guineensis)</option>
+<option>Lote 30 (Guineensis)</option>
+<option>Lote 31 (Guineensis)</option>
+<option>Lote 32A (Guineensis)</option>
+<option>Lote 33A (Guineensis)</option>
+<option>Lote 34A (Guineensis)</option>
+<option>Lote 35A (Guineensis)</option>
+<option>Lote 36 (Guineensis)</option>
+<option>Lote 37 (Guineensis)</option>
+<option>Lote 38 (Guineensis)</option>
+<option>Lote 39 (Guineensis)</option>
+<option>Lote 40 (Guineensis)</option>
+<option>Lote 41 (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 3 (Lotes 42 – 58)">
+<option>Lote 42 (Guineensis)</option>
+<option>Lote 43A (Guineensis)</option>
+<option>Lote 43B (Guineensis)</option>
+<option>Lote 44A (Guineensis)</option>
+<option>Lote 45A (Guineensis)</option>
+<option>Lote 45B (Hibrido)</option>
+<option>Lote 46 (Guineensis)</option>
+<option>Lote 47 (Guineensis)</option>
+<option>Lote 48 (Guineensis)</option>
+<option>Lote 49 (Guineensis)</option>
+<option>Lote 50 (Guineensis)</option>
+<option>Lote 51 (Guineensis)</option>
+<option>Lote 52 (Guineensis)</option>
+<option>Lote 53 (Guineensis)</option>
+<option>Lote 54 (Guineensis)</option>
+<option>Lote 55 (Guineensis)</option>
+<option>Lote 56 (Guineensis)</option>
+<option>Lote 57 (Guineensis)</option>
+<option>Lote 58 (Guineensis)</option>
+</optgroup>
+</select></div>
+        <div class="frow"><label>Producto Fertilizante *</label><select id="sal-prod" onchange="updateStockBadge()"><option value="">— Seleccionar —</option></select></div>
+        <div id="sal-stock-wrap"></div>
+        <div class="frow"><label>Presentación</label><input type="text" id="sal-pres" value="Bulto 50 kg"/></div>
+        <div class="two-col">
+          <div class="frow"><label>Bultos *</label><input type="number" id="sal-bultos" min="0" oninput="calcSalida()"/></div>
+          <div class="frow"><label>kg por bulto</label><input type="number" id="sal-kgbulto" value="50" min="0" step="0.1" oninput="calcSalida()" style="background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.3)"/></div>
+        </div>
+        <div id="sal-total-wrap" style="display:none">
+          <div class="total-hero">
+            <div>
+              <div class="th-lbl">Total calculado</div>
+              <div class="th-val" id="sal-total-val">0 kg</div>
+            </div>
+            <div class="th-right">
+              <div class="th-stock-lbl">Stock disponible</div>
+              <div class="th-stock-val" id="sal-stock-val">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="frow"><label>Vehículo</label><input type="text" id="sal-veh" value="Tractor"/></div>
+          <div class="frow"><label>Conductor</label><input type="text" id="sal-cond" placeholder="Nombre"/></div>
+        </div>
+        <div class="frow"><label>Observación</label><textarea id="sal-obs" rows="2"></textarea></div>
+        <button class="btn-main" onclick="guardarSalida()">Registrar salida →</button>
+      </div>
+      <div class="sec-lbl">Historial</div>
+      <div id="sal-list" class="records-list"></div>
+    </section>
+
+    <!-- APLICACIÓN -->
+    <section id="mod-aplicacion" class="module">
+      <div class="form-card">
+        <div class="fc-title"><div class="fc-icon">🌱</div>Aplicación en Campo</div>
+        <div class="two-col">
+          <div class="frow"><label>Fecha *</label><input type="date" id="apl-fecha"/></div>
+          <div class="frow"><label>Lote *</label><select id="apl-lote" onchange="autoFillLote('apl')">
+<option value="">— Seleccionar lote —</option>
+<optgroup label="🌿 Finca 1 (Lotes 1A – 18A)">
+<option>Lote 1A (Hibrido)</option>
+<option>Lote 2A (Hibrido)</option>
+<option>Lote 3A (Hibrido)</option>
+<option>Lote 4A (Hibrido)</option>
+<option>Lote 5 (Guineensis)</option>
+<option>Lote 6 (Guineensis)</option>
+<option>Lote 7 (Guineensis)</option>
+<option>Lote 8 (Guineensis)</option>
+<option>Lote 9 (Guineensis)</option>
+<option>Lote 10 (Guineensis)</option>
+<option>Lote 11 (Guineensis)</option>
+<option>Lote 11A (Guineensis)</option>
+<option>Lote 12 (Guineensis)</option>
+<option>Lote 13 (Guineensis)</option>
+<option>Lote 14 (Guineensis)</option>
+<option>Lote 15 (Guineensis)</option>
+<option>Lote 16 (Guineensis)</option>
+<option>Lote 17 (Guineensis)</option>
+<option>Lote 18 (Guineensis)</option>
+<option>Lote 18A (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 2 (Lotes 19 – 41)">
+<option>Lote 19 (Guineensis)</option>
+<option>Lote 20 (Guineensis)</option>
+<option>Lote 21 (Guineensis)</option>
+<option>Lote 22 (Guineensis)</option>
+<option>Lote 23 (Guineensis)</option>
+<option>Lote 24 (Guineensis)</option>
+<option>Lote 25 (Guineensis)</option>
+<option>Lote 26 (Guineensis)</option>
+<option>Lote 27 (Guineensis)</option>
+<option>Lote 28 (Guineensis)</option>
+<option>Lote 29 (Guineensis)</option>
+<option>Lote 30 (Guineensis)</option>
+<option>Lote 31 (Guineensis)</option>
+<option>Lote 32A (Guineensis)</option>
+<option>Lote 33A (Guineensis)</option>
+<option>Lote 34A (Guineensis)</option>
+<option>Lote 35A (Guineensis)</option>
+<option>Lote 36 (Guineensis)</option>
+<option>Lote 37 (Guineensis)</option>
+<option>Lote 38 (Guineensis)</option>
+<option>Lote 39 (Guineensis)</option>
+<option>Lote 40 (Guineensis)</option>
+<option>Lote 41 (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 3 (Lotes 42 – 58)">
+<option>Lote 42 (Guineensis)</option>
+<option>Lote 43A (Guineensis)</option>
+<option>Lote 43B (Guineensis)</option>
+<option>Lote 44A (Guineensis)</option>
+<option>Lote 45A (Guineensis)</option>
+<option>Lote 45B (Hibrido)</option>
+<option>Lote 46 (Guineensis)</option>
+<option>Lote 47 (Guineensis)</option>
+<option>Lote 48 (Guineensis)</option>
+<option>Lote 49 (Guineensis)</option>
+<option>Lote 50 (Guineensis)</option>
+<option>Lote 51 (Guineensis)</option>
+<option>Lote 52 (Guineensis)</option>
+<option>Lote 53 (Guineensis)</option>
+<option>Lote 54 (Guineensis)</option>
+<option>Lote 55 (Guineensis)</option>
+<option>Lote 56 (Guineensis)</option>
+<option>Lote 57 (Guineensis)</option>
+<option>Lote 58 (Guineensis)</option>
+</optgroup>
+</select></div>
+        </div>
+        <div class="frow">
+          <label>Supervisor *</label>
+          <select id="apl-sup">
+            <option value="">— Seleccionar —</option>
+            <option>Juan Carlos Oviedo</option>
+            <option>Brayan Farid Perez</option>
+            <option>Ing. Luis Fernando</option>
+            <option>Jair Martinez</option>
+            <option>Felipe Fajardo</option>
+          </select>
+        </div>
+        <div class="frow"><label>Producto *</label><select id="apl-prod"><option value="">— Seleccionar —</option></select></div>
+        <div class="two-col">
+          <div class="frow"><label>Recibido (kg) *</label><input type="number" id="apl-rec" min="0" step="0.1" oninput="calcApl()"/></div>
+          <div class="frow"><label>Aplicado (kg) *</label><input type="number" id="apl-apl" min="0" step="0.1" oninput="calcApl()"/></div>
+        </div>
+        <div class="two-col">
+          <div class="frow"><label>Área (ha) *</label><input type="number" id="apl-ha" min="0" step="0.01" oninput="calcApl()"/></div>
+          <div class="frow"><label>Palmas</label><input type="number" id="apl-palm" min="0" oninput="calcApl()"/></div>
+        </div>
+        <div class="two-col">
+          <div class="frow"><label>Cuadrilla</label><input type="text" id="apl-cuad"/></div>
+          <div class="frow"><label>Jornales</label><input type="number" id="apl-jorn" min="0" step="0.5" oninput="calcApl()"/></div>
+        </div>
+        <div class="calcs-box">
+          <div class="cl"><span>Sobrante</span><strong id="c-sob">—</strong></div>
+          <div class="cl"><span>Dosis kg/ha</span><strong id="c-ha">—</strong></div>
+          <div class="cl"><span>Dosis kg/palma</span><strong id="c-palm">—</strong></div>
+          <div class="cl"><span>kg / jornal</span><strong id="c-kjorn">—</strong></div>
+          <div class="cl"><span>ha / jornal</span><strong id="c-hjorn">—</strong></div>
+        </div>
+        <div class="frow">
+          <label>Estado</label>
+          <div class="radio-grp">
+            <label class="ropt"><input type="radio" name="apl-est" value="Completo" checked/> Completo</label>
+            <label class="ropt"><input type="radio" name="apl-est" value="Parcial"/> Parcial</label>
+            <label class="ropt"><input type="radio" name="apl-est" value="No aplicado"/> No aplicado</label>
+          </div>
+        </div>
+        <div class="frow"><label>Observaciones</label><textarea id="apl-obs" rows="2"></textarea></div>
+        <button class="btn-main" onclick="guardarAplicacion()">Registrar aplicación →</button>
+      </div>
+      <div class="sec-lbl">Historial</div>
+      <div id="apl-list" class="records-list"></div>
+    </section>
+
+    <!-- DEVOLUCIÓN -->
+    <section id="mod-devolucion" class="module">
+      <div class="form-card">
+        <div class="fc-title"><div class="fc-icon">↩</div>Devolución de Material</div>
+        <div class="two-col">
+          <div class="frow"><label>Fecha *</label><input type="date" id="dev-fecha"/></div>
+          <div class="frow"><label>Lote *</label><select id="dev-lote" onchange="calcDev()">
+<option value="">— Seleccionar lote —</option>
+<optgroup label="🌿 Finca 1 (Lotes 1A – 18A)">
+<option>Lote 1A (Hibrido)</option>
+<option>Lote 2A (Hibrido)</option>
+<option>Lote 3A (Hibrido)</option>
+<option>Lote 4A (Hibrido)</option>
+<option>Lote 5 (Guineensis)</option>
+<option>Lote 6 (Guineensis)</option>
+<option>Lote 7 (Guineensis)</option>
+<option>Lote 8 (Guineensis)</option>
+<option>Lote 9 (Guineensis)</option>
+<option>Lote 10 (Guineensis)</option>
+<option>Lote 11 (Guineensis)</option>
+<option>Lote 11A (Guineensis)</option>
+<option>Lote 12 (Guineensis)</option>
+<option>Lote 13 (Guineensis)</option>
+<option>Lote 14 (Guineensis)</option>
+<option>Lote 15 (Guineensis)</option>
+<option>Lote 16 (Guineensis)</option>
+<option>Lote 17 (Guineensis)</option>
+<option>Lote 18 (Guineensis)</option>
+<option>Lote 18A (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 2 (Lotes 19 – 41)">
+<option>Lote 19 (Guineensis)</option>
+<option>Lote 20 (Guineensis)</option>
+<option>Lote 21 (Guineensis)</option>
+<option>Lote 22 (Guineensis)</option>
+<option>Lote 23 (Guineensis)</option>
+<option>Lote 24 (Guineensis)</option>
+<option>Lote 25 (Guineensis)</option>
+<option>Lote 26 (Guineensis)</option>
+<option>Lote 27 (Guineensis)</option>
+<option>Lote 28 (Guineensis)</option>
+<option>Lote 29 (Guineensis)</option>
+<option>Lote 30 (Guineensis)</option>
+<option>Lote 31 (Guineensis)</option>
+<option>Lote 32A (Guineensis)</option>
+<option>Lote 33A (Guineensis)</option>
+<option>Lote 34A (Guineensis)</option>
+<option>Lote 35A (Guineensis)</option>
+<option>Lote 36 (Guineensis)</option>
+<option>Lote 37 (Guineensis)</option>
+<option>Lote 38 (Guineensis)</option>
+<option>Lote 39 (Guineensis)</option>
+<option>Lote 40 (Guineensis)</option>
+<option>Lote 41 (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 3 (Lotes 42 – 58)">
+<option>Lote 42 (Guineensis)</option>
+<option>Lote 43A (Guineensis)</option>
+<option>Lote 43B (Guineensis)</option>
+<option>Lote 44A (Guineensis)</option>
+<option>Lote 45A (Guineensis)</option>
+<option>Lote 45B (Hibrido)</option>
+<option>Lote 46 (Guineensis)</option>
+<option>Lote 47 (Guineensis)</option>
+<option>Lote 48 (Guineensis)</option>
+<option>Lote 49 (Guineensis)</option>
+<option>Lote 50 (Guineensis)</option>
+<option>Lote 51 (Guineensis)</option>
+<option>Lote 52 (Guineensis)</option>
+<option>Lote 53 (Guineensis)</option>
+<option>Lote 54 (Guineensis)</option>
+<option>Lote 55 (Guineensis)</option>
+<option>Lote 56 (Guineensis)</option>
+<option>Lote 57 (Guineensis)</option>
+<option>Lote 58 (Guineensis)</option>
+</optgroup>
+</select></div>
+        </div>
+        <div class="frow"><label>Producto *</label><select id="dev-prod" onchange="calcDev()"><option value="">— Seleccionar —</option></select></div>
+        <div class="frow"><label>Cantidad Devuelta (kg) *</label><input type="number" id="dev-cant" min="0" step="0.1" oninput="calcDev()"/></div>
+        <div class="frow">
+          <label>Estado del Material</label>
+          <select id="dev-estmat"><option>Bueno</option><option>Húmedo</option><option>Dañado</option><option>Contaminado</option></select>
+        </div>
+        <div class="frow"><label>Responsable *</label><input type="text" id="dev-resp"/></div>
+        <div class="frow"><label>Observación</label><textarea id="dev-obs" rows="2"></textarea></div>
+        <div class="concil-box">
+          <div class="concil-head">Conciliación Lote / Producto</div>
+          <div class="cl"><span>Salido</span><strong id="con-sal">—</strong></div>
+          <div class="cl"><span>Aplicado</span><strong id="con-apl">—</strong></div>
+          <div class="cl"><span>Devuelto acum.</span><strong id="con-dev">—</strong></div>
+          <div class="cl"><span>Diferencia</span><strong id="con-dif">—</strong></div>
+          <div class="semaforo" id="con-sem">—</div>
+        </div>
+        <button class="btn-main" onclick="guardarDevolucion()">Registrar devolución →</button>
+      </div>
+      <div class="sec-lbl">Historial</div>
+      <div id="dev-list" class="records-list"></div>
+    </section>
+
+    <!-- INVENTARIO -->
+    <section id="mod-inventario" class="module">
+      <div class="inv-tabs">
+        <button class="inv-tab active" onclick="invTab(event,'stock')">Stock actual</button>
+        <button class="inv-tab" onclick="invTab(event,'entrada')">Entrada</button>
+        <button class="inv-tab" onclick="invTab(event,'ajuste')">Ajuste</button>
+      </div>
+      <div id="inv-stock" class="inv-panel active">
+        <div id="stock-grid" class="stock-grid"></div>
+      </div>
+      <div id="inv-entrada" class="inv-panel">
+        <div class="form-card">
+          <div class="fc-title"><div class="fc-icon">⬇</div>Entrada de Inventario</div>
+          <div class="frow"><label>Fecha *</label><input type="date" id="ent-fecha"/></div>
+          <div class="frow"><label>Producto *</label><select id="ent-prod"><option value="">— Seleccionar —</option></select></div>
+          <div class="frow"><label>Cantidad (kg) *</label><input type="number" id="ent-cant" min="0" step="0.1"/></div>
+          <div class="frow"><label>Proveedor</label><input type="text" id="ent-prov"/></div>
+          <div class="frow"><label>Remisión / Factura</label><input type="text" id="ent-rem"/></div>
+          <div class="frow"><label>Observación</label><textarea id="ent-obs" rows="2"></textarea></div>
+          <button class="btn-main" onclick="guardarEntrada()">Registrar entrada →</button>
+        </div>
+      </div>
+      <div id="inv-ajuste" class="inv-panel">
+        <div class="form-card">
+          <div class="fc-title"><div class="fc-icon">⚙</div>Ajuste de Inventario</div>
+          <div class="frow"><label>Producto *</label><select id="adj-prod"><option value="">— Seleccionar —</option></select></div>
+          <div class="frow">
+            <label>Tipo de ajuste</label>
+            <div class="radio-grp">
+              <label class="ropt"><input type="radio" name="adj-tipo" value="suma" checked/> + Suma</label>
+              <label class="ropt"><input type="radio" name="adj-tipo" value="resta"/> − Resta</label>
+            </div>
+          </div>
+          <div class="frow"><label>Cantidad (kg) *</label><input type="number" id="adj-cant" min="0" step="0.1"/></div>
+          <div class="frow"><label>Motivo *</label><textarea id="adj-mot" rows="2"></textarea></div>
+          <button class="btn-main" onclick="guardarAjuste()">Aplicar ajuste →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="mod-plan" class="module">
+
+  <!-- CONFIGURACIÓN DEL LOTE -->
+  <div class="form-card">
+    <div class="fc-title"><div class="fc-icon">▦</div>Plan de Fertilización</div>
+
+    <div class="frow">
+      <label>Lote *</label>
+      <select id="plan-lote" onchange="planSeleccionarLote()">
+        <option value="">— Seleccionar lote —</option>
+      </select>
+    </div>
+
+    <!-- Panel editable del plan (siempre visible al seleccionar lote) -->
+    <div id="plan-lote-panel" style="display:none">
+
+      <!-- Parámetros base -->
+      <div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);
+        border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+          color:rgba(74,222,128,0.6);margin-bottom:12px">Parámetros del plan</div>
+
+        <div class="two-col">
+          <div class="frow"><label>Área (ha)</label>
+            <input type="number" id="pe-area" min="0" step="0.01" oninput="calcPlanBase()"/>
+          </div>
+          <div class="frow"><label>N° Palmas</label>
+            <input type="number" id="pe-palmas" min="0" oninput="calcPlanBase()"/>
+          </div>
+        </div>
+
+        <div class="frow">
+          <label>Fertilizante *</label>
+          <select id="pe-fertilizante" onchange="calcPlanBase()">
+            <option value="">— Seleccionar —</option>
+            <option>Mezcla 13-5-27</option>
+            <option>Mezcla 20-3-21</option>
+            <option>Borato 48</option>
+            <option>Kieserita</option>
+            <option value="__otro__">+ Agregar otro...</option>
+          </select>
+        </div>
+        <div id="pe-otro-wrap" style="display:none">
+          <div class="frow"><label>Nombre fertilizante</label>
+            <input type="text" id="pe-fertilizante-otro" placeholder="Escriba el fertilizante"/>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="frow"><label>kg / palma / año *</label>
+            <input type="number" id="pe-kgpal-año" min="0" step="0.001" oninput="calcPlanBase()"/>
+          </div>
+          <div class="frow"><label>N° de Rondas *</label>
+            <select id="pe-rondas" onchange="generarFilasRondas()">
+              <option value="1">1 Ronda</option>
+              <option value="2">2 Rondas</option>
+              <option value="3" selected>3 Rondas</option>
+              <option value="4">4 Rondas</option>
+              <option value="5">5 Rondas</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Totales calculados -->
+        <div class="calcs-box" style="margin-bottom:0">
+          <div class="cl"><span>Total kg/año (plan)</span><strong id="pe-total-kg">—</strong></div>
+          <div class="cl"><span>kg/ha</span><strong id="pe-dosis-ha">—</strong></div>
+        </div>
+      </div>
+
+      <!-- RONDAS INDIVIDUALES -->
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+        color:rgba(255,255,255,0.3);margin-bottom:10px">Dosis por ronda</div>
+      <div id="plan-rondas-editor" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+
+      <!-- Validación suma -->
+      <div id="plan-suma-check" style="display:none;padding:10px 14px;border-radius:10px;
+        font-size:11px;font-weight:700;margin-bottom:14px;font-family:monospace"></div>
+
+      <button class="btn-main" onclick="guardarPlanLote()">Guardar plan del lote →</button>
+    </div>
+  </div>
+
+  <!-- RESUMEN: selector de ronda para registro -->
+  <div class="form-card" id="plan-registro-card" style="display:none">
+    <div class="fc-title" style="font-size:14px">
+      <div class="fc-icon">📋</div>Registrar ejecución de ronda
+    </div>
+    <div class="frow">
+      <label>Ronda</label>
+      <select id="plan-ronda" onchange="planSeleccionarRonda()">
+        <option value="">— Seleccionar ronda —</option>
+      </select>
+    </div>
+    <div id="plan-ronda-form" style="display:none">
+      <div class="two-col">
+        <div class="frow"><label>Bultos programados</label>
+          <input type="text" id="pr-bultos-prog" class="readonly" readonly/>
+        </div>
+        <div class="frow"><label>Bultos aplicados</label>
+          <input type="number" id="pr-bultos-aplic" min="0" step="0.01" oninput="calcRonda()"/>
+        </div>
+      </div>
+      <div class="calcs-box" style="margin-bottom:14px">
+        <div class="cl"><span>kg programados</span><strong id="pr-kg-prog">—</strong></div>
+        <div class="cl"><span>kg aplicados</span><strong id="pr-kg-aplic">—</strong></div>
+        <div class="cl"><span>Avance ronda</span><strong id="pr-avance">—</strong></div>
+      </div>
+      <div class="frow"><label>Fecha de aplicación</label><input type="date" id="pr-fecha"/></div>
+      <div class="frow">
+        <label>Método</label>
+        <select id="pr-metodo">
+          <option value="">— Seleccionar —</option>
+          <option>Colador</option><option>Manual</option>
+          <option>Mecánico</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="frow"><label>Aplicador / Cuadrilla</label>
+        <input type="text" id="pr-aplicador" placeholder="Nombre o cuadrilla"/>
+      </div>
+      <div class="frow"><label>Observaciones</label>
+        <textarea id="pr-obs" rows="2"></textarea>
+      </div>
+      <div class="frow">
+        <label>Estado</label>
+        <div class="radio-grp">
+          <label class="ropt"><input type="radio" name="pr-estado" value="pendiente" checked/> Pendiente</label>
+          <label class="ropt"><input type="radio" name="pr-estado" value="en_curso"/> En curso</label>
+          <label class="ropt"><input type="radio" name="pr-estado" value="ejecutado"/> Ejecutado</label>
+        </div>
+      </div>
+      <button class="btn-main" onclick="guardarRonda()">Guardar ejecución →</button>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Resumen global</div>
+  <div id="plan-list" class="records-list"></div>
+
+</section>
+
+    <!-- NOVEDADES -->
+    <section id="mod-novedades" class="module">
+      <div class="form-card">
+        <div class="fc-title"><div class="fc-icon">⚑</div>Registro de Novedad</div>
+        <div class="two-col">
+          <div class="frow"><label>Fecha *</label><input type="date" id="nov-fecha"/></div>
+          <div class="frow"><label>Lote *</label><select id="nov-lote">
+<option value="">— Seleccionar lote —</option>
+<optgroup label="🌿 Finca 1 (Lotes 1A – 18A)">
+<option>Lote 1A (Hibrido)</option>
+<option>Lote 2A (Hibrido)</option>
+<option>Lote 3A (Hibrido)</option>
+<option>Lote 4A (Hibrido)</option>
+<option>Lote 5 (Guineensis)</option>
+<option>Lote 6 (Guineensis)</option>
+<option>Lote 7 (Guineensis)</option>
+<option>Lote 8 (Guineensis)</option>
+<option>Lote 9 (Guineensis)</option>
+<option>Lote 10 (Guineensis)</option>
+<option>Lote 11 (Guineensis)</option>
+<option>Lote 11A (Guineensis)</option>
+<option>Lote 12 (Guineensis)</option>
+<option>Lote 13 (Guineensis)</option>
+<option>Lote 14 (Guineensis)</option>
+<option>Lote 15 (Guineensis)</option>
+<option>Lote 16 (Guineensis)</option>
+<option>Lote 17 (Guineensis)</option>
+<option>Lote 18 (Guineensis)</option>
+<option>Lote 18A (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 2 (Lotes 19 – 41)">
+<option>Lote 19 (Guineensis)</option>
+<option>Lote 20 (Guineensis)</option>
+<option>Lote 21 (Guineensis)</option>
+<option>Lote 22 (Guineensis)</option>
+<option>Lote 23 (Guineensis)</option>
+<option>Lote 24 (Guineensis)</option>
+<option>Lote 25 (Guineensis)</option>
+<option>Lote 26 (Guineensis)</option>
+<option>Lote 27 (Guineensis)</option>
+<option>Lote 28 (Guineensis)</option>
+<option>Lote 29 (Guineensis)</option>
+<option>Lote 30 (Guineensis)</option>
+<option>Lote 31 (Guineensis)</option>
+<option>Lote 32A (Guineensis)</option>
+<option>Lote 33A (Guineensis)</option>
+<option>Lote 34A (Guineensis)</option>
+<option>Lote 35A (Guineensis)</option>
+<option>Lote 36 (Guineensis)</option>
+<option>Lote 37 (Guineensis)</option>
+<option>Lote 38 (Guineensis)</option>
+<option>Lote 39 (Guineensis)</option>
+<option>Lote 40 (Guineensis)</option>
+<option>Lote 41 (Guineensis)</option>
+</optgroup>
+<optgroup label="🌿 Finca 3 (Lotes 42 – 58)">
+<option>Lote 42 (Guineensis)</option>
+<option>Lote 43A (Guineensis)</option>
+<option>Lote 43B (Guineensis)</option>
+<option>Lote 44A (Guineensis)</option>
+<option>Lote 45A (Guineensis)</option>
+<option>Lote 45B (Hibrido)</option>
+<option>Lote 46 (Guineensis)</option>
+<option>Lote 47 (Guineensis)</option>
+<option>Lote 48 (Guineensis)</option>
+<option>Lote 49 (Guineensis)</option>
+<option>Lote 50 (Guineensis)</option>
+<option>Lote 51 (Guineensis)</option>
+<option>Lote 52 (Guineensis)</option>
+<option>Lote 53 (Guineensis)</option>
+<option>Lote 54 (Guineensis)</option>
+<option>Lote 55 (Guineensis)</option>
+<option>Lote 56 (Guineensis)</option>
+<option>Lote 57 (Guineensis)</option>
+<option>Lote 58 (Guineensis)</option>
+</optgroup>
+</select></div>
+        </div>
+        <div class="frow">
+          <label>Tipo *</label>
+          <select id="nov-tipo">
+            <option value="">— Seleccionar —</option>
+            <option>Lluvia</option><option>Falta de personal</option><option>Falta de fertilizante</option>
+            <option>Error de dosis</option><option>Equipo averiado</option><option>Acceso bloqueado</option>
+            <option>Aplicación suspendida</option><option>Derrame</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="frow"><label>Descripción *</label><textarea id="nov-desc" rows="3"></textarea></div>
+        <div class="frow"><label>Responsable *</label><input type="text" id="nov-resp"/></div>
+        <div class="frow">
+          <label>¿Resuelto?</label>
+          <div class="radio-grp">
+            <label class="ropt"><input type="radio" name="nov-res" value="No" checked/> No</label>
+            <label class="ropt"><input type="radio" name="nov-res" value="Sí"/> Sí</label>
+          </div>
+        </div>
+        <button class="btn-main" onclick="guardarNovedad()">Registrar novedad →</button>
+      </div>
+      <div class="sec-lbl">Novedades recientes</div>
+      <div id="nov-list" class="records-list"></div>
+    </section>
+
+    <!-- SYNC -->
+    <section id="mod-sync" class="module">
+      <div class="sync-hero">
+        <div class="sync-title">SYNC</div>
+        <h2>Sincronización con Google Sheets</h2>
+        <p id="sync-txt">Verificando conexión...</p>
+        <div class="cnt-grid" id="sync-cnts"></div>
+        <button class="btn-main" id="btn-sync" onclick="sincronizarTodo()">Sincronizar ahora →</button>
+        <div class="sync-log" id="sync-log"></div>
+      </div>
+      <div class="form-card">
+        <div class="fc-title" style="font-size:14px"><div class="fc-icon">⚙</div>URL Google Apps Script</div>
+        <div class="frow"><label>URL del despliegue</label><input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec"/></div>
+        <button class="btn-sec" onclick="saveGasUrl()">Guardar URL</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* Fertiliza Palma Grande — app.js */
+
+/* ── Constantes ─────────────────────── */
+const PINS = { almacen:'1111', supervisor:'2222', direccion:'3333', consulta:'4444' };
+const PRODUCTOS = ["Mezcla 13-5-27", "Mezcla 20-3-21", "Borato 48", "Kieserita"];
+const PROD_ICONS = {'Mezcla 13-5-27':'🌿','Mezcla 20-3-21':'🍃','Borato 48':'🔵','Kieserita':'⬜'};
+const PROD_MIN   = {'Mezcla 13-5-27':5000,'Mezcla 20-3-21':3000,'Borato 48':1000,'Kieserita':2000};
+const LOTES = ["Lote 1A (Hibrido)", "Lote 2A (Hibrido)", "Lote 3A (Hibrido)", "Lote 4A (Hibrido)", "Lote 5 (Guineensis)", "Lote 6 (Guineensis)", "Lote 7 (Guineensis)", "Lote 8 (Guineensis)", "Lote 9 (Guineensis)", "Lote 10 (Guineensis)", "Lote 11 (Guineensis)", "Lote 11A (Guineensis)", "Lote 12 (Guineensis)", "Lote 13 (Guineensis)", "Lote 14 (Guineensis)", "Lote 15 (Guineensis)", "Lote 16 (Guineensis)", "Lote 17 (Guineensis)", "Lote 18 (Guineensis)", "Lote 18A (Guineensis)", "Lote 19 (Guineensis)", "Lote 20 (Guineensis)", "Lote 21 (Guineensis)", "Lote 22 (Guineensis)", "Lote 23 (Guineensis)", "Lote 24 (Guineensis)", "Lote 25 (Guineensis)", "Lote 26 (Guineensis)", "Lote 27 (Guineensis)", "Lote 28 (Guineensis)", "Lote 29 (Guineensis)", "Lote 30 (Guineensis)", "Lote 31 (Guineensis)", "Lote 32A (Guineensis)", "Lote 33A (Guineensis)", "Lote 34A (Guineensis)", "Lote 35A (Guineensis)", "Lote 36 (Guineensis)", "Lote 37 (Guineensis)", "Lote 38 (Guineensis)", "Lote 39 (Guineensis)", "Lote 40 (Guineensis)", "Lote 41 (Guineensis)", "Lote 42 (Guineensis)", "Lote 43A (Guineensis)", "Lote 43B (Guineensis)", "Lote 44A (Guineensis)", "Lote 45A (Guineensis)", "Lote 45B (Hibrido)", "Lote 46 (Guineensis)", "Lote 47 (Guineensis)", "Lote 48 (Guineensis)", "Lote 49 (Guineensis)", "Lote 50 (Guineensis)", "Lote 51 (Guineensis)", "Lote 52 (Guineensis)", "Lote 53 (Guineensis)", "Lote 54 (Guineensis)", "Lote 55 (Guineensis)", "Lote 56 (Guineensis)", "Lote 57 (Guineensis)", "Lote 58 (Guineensis)"];
+const PLAN_PALMAGRANDE = [{"lote": "Lote 1A (Hibrido)", "area": 24.59, "palmas": 2442, "totalKg": 17970.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 0, "kg": 0, "aplic": 0.0}, "20-3-21": {"bultos": 347.03, "kg": 17351.5, "aplic": 0.0}, "Borato 48": {"bultos": 12.38, "kg": 619.0, "aplic": 0.0}, "Kieserita": {"bultos": 0, "kg": 0, "aplic": 0.0}}}, {"lote": "Lote 2A (Hibrido)", "area": 16.42, "palmas": 1736, "totalKg": 13330.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 0, "kg": 0, "aplic": 0.0}, "20-3-21": {"bultos": 257.41, "kg": 12870.5, "aplic": 0.0}, "Borato 48": {"bultos": 9.19, "kg": 459.5, "aplic": 0.0}, "Kieserita": {"bultos": 0, "kg": 0, "aplic": 0.0}}}, {"lote": "Lote 3A (Hibrido)", "area": 15.9, "palmas": 1668, "totalKg": 10586.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 0, "kg": 0, "aplic": 0.0}, "20-3-21": {"bultos": 204.42, "kg": 10221.0, "aplic": 0.0}, "Borato 48": {"bultos": 7.3, "kg": 365.0, "aplic": 0.0}, "Kieserita": {"bultos": 0, "kg": 0, "aplic": 0.0}}}, {"lote": "Lote 4A (Hibrido)", "area": 29.36, "palmas": 3116, "totalKg": 21666.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 0, "kg": 0, "aplic": 0.0}, "20-3-21": {"bultos": 418.39, "kg": 20919.5, "aplic": 0.0}, "Borato 48": {"bultos": 14.93, "kg": 746.5, "aplic": 0.0}, "Kieserita": {"bultos": 0, "kg": 0, "aplic": 0.0}}}, {"lote": "Lote 5 (Guineensis)", "area": 22.99, "palmas": 3234, "totalKg": 23453.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 421.19, "kg": 21059.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 14.17, "kg": 708.5, "aplic": 0.0}, "Kieserita": {"bultos": 33.7, "kg": 1685.0, "aplic": 0.0}}}, {"lote": "Lote 6 (Guineensis)", "area": 30.04, "palmas": 4145, "totalKg": 30902.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 554.97, "kg": 27748.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 18.67, "kg": 933.5, "aplic": 0.0}, "Kieserita": {"bultos": 44.4, "kg": 2220.0, "aplic": 0.0}}}, {"lote": "Lote 7 (Guineensis)", "area": 31.83, "palmas": 4418, "totalKg": 29182.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 524.08, "kg": 26204.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 17.63, "kg": 881.5, "aplic": 0.0}, "Kieserita": {"bultos": 41.93, "kg": 2096.5, "aplic": 0.0}}}, {"lote": "Lote 8 (Guineensis)", "area": 13.1, "palmas": 1819, "totalKg": 13229.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 237.58, "kg": 11879.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 7.99, "kg": 399.5, "aplic": 0.0}, "Kieserita": {"bultos": 19.01, "kg": 950.5, "aplic": 0.0}}}, {"lote": "Lote 9 (Guineensis)", "area": 15.05, "palmas": 2089, "totalKg": 16514.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 296.57, "kg": 14828.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.98, "kg": 499.0, "aplic": 0.0}, "Kieserita": {"bultos": 23.73, "kg": 1186.5, "aplic": 0.0}}}, {"lote": "Lote 10 (Guineensis)", "area": 13.62, "palmas": 1904, "totalKg": 15118.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 271.51, "kg": 13575.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.13, "kg": 456.5, "aplic": 0.0}, "Kieserita": {"bultos": 21.72, "kg": 1086.0, "aplic": 0.0}}}, {"lote": "Lote 11 (Guineensis)", "area": 9.93, "palmas": 1361, "totalKg": 10432.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 187.36, "kg": 9368.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.3, "kg": 315.0, "aplic": 0.0}, "Kieserita": {"bultos": 14.99, "kg": 749.5, "aplic": 0.0}}}, {"lote": "Lote 11A (Guineensis)", "area": 3.27, "palmas": 399, "totalKg": 2626.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 47.88, "kg": 2394.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 0.82, "kg": 41.0, "aplic": 0.0}, "Kieserita": {"bultos": 3.83, "kg": 191.5, "aplic": 0.0}}}, {"lote": "Lote 12 (Guineensis)", "area": 12.16, "palmas": 1637, "totalKg": 9505.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 170.7, "kg": 8535.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 5.74, "kg": 287.0, "aplic": 0.0}, "Kieserita": {"bultos": 13.66, "kg": 683.0, "aplic": 0.0}}}, {"lote": "Lote 13 (Guineensis)", "area": 13.98, "palmas": 1905, "totalKg": 12100.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 217.31, "kg": 10865.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 7.31, "kg": 365.5, "aplic": 0.0}, "Kieserita": {"bultos": 17.39, "kg": 869.5, "aplic": 0.0}}}, {"lote": "Lote 14 (Guineensis)", "area": 16.94, "palmas": 2382, "totalKg": 13701.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 246.06, "kg": 12303.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.28, "kg": 414.0, "aplic": 0.0}, "Kieserita": {"bultos": 19.69, "kg": 984.5, "aplic": 0.0}}}, {"lote": "Lote 15 (Guineensis)", "area": 12.3, "palmas": 1715, "totalKg": 10488.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 188.36, "kg": 9418.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.34, "kg": 317.0, "aplic": 0.0}, "Kieserita": {"bultos": 15.07, "kg": 753.5, "aplic": 0.0}}}, {"lote": "Lote 16 (Guineensis)", "area": 19.75, "palmas": 2712, "totalKg": 14087.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 252.99, "kg": 12649.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.51, "kg": 425.5, "aplic": 0.0}, "Kieserita": {"bultos": 20.24, "kg": 1012.0, "aplic": 0.0}}}, {"lote": "Lote 17 (Guineensis)", "area": 22.82, "palmas": 3147, "totalKg": 15457.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 277.59, "kg": 13879.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.34, "kg": 467.0, "aplic": 0.0}, "Kieserita": {"bultos": 22.21, "kg": 1110.5, "aplic": 0.0}}}, {"lote": "Lote 18 (Guineensis)", "area": 10.0, "palmas": 1311, "totalKg": 7856.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 141.09, "kg": 7054.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 4.75, "kg": 237.5, "aplic": 0.0}, "Kieserita": {"bultos": 11.29, "kg": 564.5, "aplic": 0.0}}}, {"lote": "Lote 18A (Guineensis)", "area": 3.5, "palmas": 476, "totalKg": 3133.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 57.12, "kg": 2856.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 0.98, "kg": 49.0, "aplic": 0.0}, "Kieserita": {"bultos": 4.57, "kg": 228.5, "aplic": 0.0}}}, {"lote": "Lote 19 (Guineensis)", "area": 23.62, "palmas": 3285, "totalKg": 23161.0, "aplKg": 7200.0, "avance": 31.1, "detalle": {"13-5-27": {"bultos": 415.95, "kg": 20797.5, "aplic": 7200.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 13.99, "kg": 699.5, "aplic": 0.0}, "Kieserita": {"bultos": 33.28, "kg": 1664.0, "aplic": 0.0}}}, {"lote": "Lote 20 (Guineensis)", "area": 19.16, "palmas": 2583, "totalKg": 22597.0, "aplKg": 5650.0, "avance": 25.0, "detalle": {"13-5-27": {"bultos": 405.82, "kg": 20291.0, "aplic": 5650.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 13.65, "kg": 682.5, "aplic": 0.0}, "Kieserita": {"bultos": 32.47, "kg": 1623.5, "aplic": 0.0}}}, {"lote": "Lote 21 (Guineensis)", "area": 16.29, "palmas": 2283, "totalKg": 18632.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 334.62, "kg": 16731.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 11.26, "kg": 563.0, "aplic": 0.0}, "Kieserita": {"bultos": 26.77, "kg": 1338.5, "aplic": 0.0}}}, {"lote": "Lote 22 (Guineensis)", "area": 19.07, "palmas": 2545, "totalKg": 17165.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 308.28, "kg": 15414.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 10.37, "kg": 518.5, "aplic": 0.0}, "Kieserita": {"bultos": 24.66, "kg": 1233.0, "aplic": 0.0}}}, {"lote": "Lote 23 (Guineensis)", "area": 15.08, "palmas": 2044, "totalKg": 13699.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 246.02, "kg": 12301.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.28, "kg": 414.0, "aplic": 0.0}, "Kieserita": {"bultos": 19.68, "kg": 984.0, "aplic": 0.0}}}, {"lote": "Lote 24 (Guineensis)", "area": 22.01, "palmas": 3061, "totalKg": 22044.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 395.89, "kg": 19794.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 13.32, "kg": 666.0, "aplic": 0.0}, "Kieserita": {"bultos": 31.67, "kg": 1583.5, "aplic": 0.0}}}, {"lote": "Lote 25 (Guineensis)", "area": 11.09, "palmas": 1532, "totalKg": 10620.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 190.72, "kg": 9536.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.42, "kg": 321.0, "aplic": 0.0}, "Kieserita": {"bultos": 15.26, "kg": 763.0, "aplic": 0.0}}}, {"lote": "Lote 26 (Guineensis)", "area": 11.1, "palmas": 1545, "totalKg": 10728.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 192.68, "kg": 9634.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.48, "kg": 324.0, "aplic": 0.0}, "Kieserita": {"bultos": 15.41, "kg": 770.5, "aplic": 0.0}}}, {"lote": "Lote 27 (Guineensis)", "area": 17.18, "palmas": 2390, "totalKg": 17549.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 315.18, "kg": 15759.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 10.6, "kg": 530.0, "aplic": 0.0}, "Kieserita": {"bultos": 25.21, "kg": 1260.5, "aplic": 0.0}}}, {"lote": "Lote 28 (Guineensis)", "area": 12.87, "palmas": 1741, "totalKg": 11280.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 202.59, "kg": 10129.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.81, "kg": 340.5, "aplic": 0.0}, "Kieserita": {"bultos": 16.21, "kg": 810.5, "aplic": 0.0}}}, {"lote": "Lote 29 (Guineensis)", "area": 22.37, "palmas": 3072, "totalKg": 20640.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 370.69, "kg": 18534.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 12.47, "kg": 623.5, "aplic": 0.0}, "Kieserita": {"bultos": 29.65, "kg": 1482.5, "aplic": 0.0}}}, {"lote": "Lote 30 (Guineensis)", "area": 23.41, "palmas": 3233, "totalKg": 21560.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 387.2, "kg": 19360.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 13.02, "kg": 651.0, "aplic": 0.0}, "Kieserita": {"bultos": 30.98, "kg": 1549.0, "aplic": 0.0}}}, {"lote": "Lote 31 (Guineensis)", "area": 19.56, "palmas": 2683, "totalKg": 16217.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 291.25, "kg": 14562.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.8, "kg": 490.0, "aplic": 0.0}, "Kieserita": {"bultos": 23.3, "kg": 1165.0, "aplic": 0.0}}}, {"lote": "Lote 32A (Guineensis)", "area": 21.77, "palmas": 2956, "totalKg": 19090.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 342.85, "kg": 17142.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 11.53, "kg": 576.5, "aplic": 0.0}, "Kieserita": {"bultos": 27.43, "kg": 1371.5, "aplic": 0.0}}}, {"lote": "Lote 33A (Guineensis)", "area": 21.08, "palmas": 2889, "totalKg": 14212.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 255.23, "kg": 12761.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.59, "kg": 429.5, "aplic": 0.0}, "Kieserita": {"bultos": 20.42, "kg": 1021.0, "aplic": 0.0}}}, {"lote": "Lote 34A (Guineensis)", "area": 11.52, "palmas": 1565, "totalKg": 10177.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 182.78, "kg": 9139.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.15, "kg": 307.5, "aplic": 0.0}, "Kieserita": {"bultos": 14.62, "kg": 731.0, "aplic": 0.0}}}, {"lote": "Lote 35A (Guineensis)", "area": 17.81, "palmas": 2436, "totalKg": 15124.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 271.62, "kg": 13581.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.14, "kg": 457.0, "aplic": 0.0}, "Kieserita": {"bultos": 21.73, "kg": 1086.5, "aplic": 0.0}}}, {"lote": "Lote 36 (Guineensis)", "area": 23.67, "palmas": 3284, "totalKg": 24111.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 433.02, "kg": 21651.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 14.57, "kg": 728.5, "aplic": 0.0}, "Kieserita": {"bultos": 34.64, "kg": 1732.0, "aplic": 0.0}}}, {"lote": "Lote 37 (Guineensis)", "area": 9.21, "palmas": 1223, "totalKg": 7210.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 129.49, "kg": 6474.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 4.36, "kg": 218.0, "aplic": 0.0}, "Kieserita": {"bultos": 10.36, "kg": 518.0, "aplic": 0.0}}}, {"lote": "Lote 38 (Guineensis)", "area": 10.12, "palmas": 1432, "totalKg": 9812.0, "aplKg": 1500.0, "avance": 15.3, "detalle": {"13-5-27": {"bultos": 176.21, "kg": 8810.5, "aplic": 1500.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 5.93, "kg": 296.5, "aplic": 0.0}, "Kieserita": {"bultos": 14.1, "kg": 705.0, "aplic": 0.0}}}, {"lote": "Lote 39 (Guineensis)", "area": 14.05, "palmas": 1928, "totalKg": 12501.5, "aplKg": 1750.0, "avance": 14.0, "detalle": {"13-5-27": {"bultos": 224.52, "kg": 11226.0, "aplic": 1750.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 7.55, "kg": 377.5, "aplic": 0.0}, "Kieserita": {"bultos": 17.96, "kg": 898.0, "aplic": 0.0}}}, {"lote": "Lote 40 (Guineensis)", "area": 15.02, "palmas": 2066, "totalKg": 16902.5, "aplKg": 4300.0, "avance": 25.4, "detalle": {"13-5-27": {"bultos": 303.56, "kg": 15178.0, "aplic": 4300.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 10.21, "kg": 510.5, "aplic": 0.0}, "Kieserita": {"bultos": 24.28, "kg": 1214.0, "aplic": 0.0}}}, {"lote": "Lote 41 (Guineensis)", "area": 18.1, "palmas": 2476, "totalKg": 16256.5, "aplKg": 5700.0, "avance": 35.1, "detalle": {"13-5-27": {"bultos": 291.95, "kg": 14597.5, "aplic": 5700.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.82, "kg": 491.0, "aplic": 0.0}, "Kieserita": {"bultos": 23.36, "kg": 1168.0, "aplic": 0.0}}}, {"lote": "Lote 42 (Guineensis)", "area": 29.21, "palmas": 3897, "totalKg": 28085.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 504.38, "kg": 25219.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 16.97, "kg": 848.5, "aplic": 0.0}, "Kieserita": {"bultos": 40.35, "kg": 2017.5, "aplic": 0.0}}}, {"lote": "Lote 43A (Guineensis)", "area": 7.26, "palmas": 984, "totalKg": 8081.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 145.13, "kg": 7256.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 4.88, "kg": 244.0, "aplic": 0.0}, "Kieserita": {"bultos": 11.61, "kg": 580.5, "aplic": 0.0}}}, {"lote": "Lote 43B (Guineensis)", "area": 6.07, "palmas": 782, "totalKg": 4306.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 77.33, "kg": 3866.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 2.6, "kg": 130.0, "aplic": 0.0}, "Kieserita": {"bultos": 6.19, "kg": 309.5, "aplic": 0.0}}}, {"lote": "Lote 44A (Guineensis)", "area": 22.28, "palmas": 2935, "totalKg": 19350.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 347.51, "kg": 17375.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 11.69, "kg": 584.5, "aplic": 0.0}, "Kieserita": {"bultos": 27.8, "kg": 1390.0, "aplic": 0.0}}}, {"lote": "Lote 45A (Guineensis)", "area": 10.7, "palmas": 1441, "totalKg": 10042.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 180.34, "kg": 9017.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 6.07, "kg": 303.5, "aplic": 0.0}, "Kieserita": {"bultos": 14.43, "kg": 721.5, "aplic": 0.0}}}, {"lote": "Lote 45B (Hibrido)", "area": 10.15, "palmas": 896, "totalKg": 4347.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "20-3-21": {"bultos": 84.0, "kg": 4200.0, "aplic": 0.0}, "Borato 48": {"bultos": 2.94, "kg": 147.0, "aplic": 0.0}, "Kieserita": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}}}, {"lote": "Lote 46 (Guineensis)", "area": 22.65, "palmas": 3131, "totalKg": 18497.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 332.19, "kg": 16609.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 11.17, "kg": 558.5, "aplic": 0.0}, "Kieserita": {"bultos": 26.58, "kg": 1329.0, "aplic": 0.0}}}, {"lote": "Lote 47 (Guineensis)", "area": 24.43, "palmas": 3373, "totalKg": 23600.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 423.84, "kg": 21192.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 14.26, "kg": 713.0, "aplic": 0.0}, "Kieserita": {"bultos": 33.91, "kg": 1695.5, "aplic": 0.0}}}, {"lote": "Lote 48 (Guineensis)", "area": 17.31, "palmas": 2396, "totalKg": 15346.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 275.6, "kg": 13780.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 9.27, "kg": 463.5, "aplic": 0.0}, "Kieserita": {"bultos": 22.05, "kg": 1102.5, "aplic": 0.0}}}, {"lote": "Lote 49 (Guineensis)", "area": 23.27, "palmas": 3216, "totalKg": 26034.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 467.55, "kg": 23377.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 15.73, "kg": 786.5, "aplic": 0.0}, "Kieserita": {"bultos": 37.4, "kg": 1870.0, "aplic": 0.0}}}, {"lote": "Lote 50 (Guineensis)", "area": 30.03, "palmas": 4118, "totalKg": 29656.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 532.6, "kg": 26630.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 17.92, "kg": 896.0, "aplic": 0.0}, "Kieserita": {"bultos": 42.61, "kg": 2130.5, "aplic": 0.0}}}, {"lote": "Lote 51 (Guineensis)", "area": 18.39, "palmas": 2517, "totalKg": 21356.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 383.54, "kg": 19177.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 12.9, "kg": 645.0, "aplic": 0.0}, "Kieserita": {"bultos": 30.68, "kg": 1534.0, "aplic": 0.0}}}, {"lote": "Lote 52 (Guineensis)", "area": 13.59, "palmas": 1883, "totalKg": 13401.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 240.67, "kg": 12033.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.1, "kg": 405.0, "aplic": 0.0}, "Kieserita": {"bultos": 19.25, "kg": 962.5, "aplic": 0.0}}}, {"lote": "Lote 53 (Guineensis)", "area": 18.34, "palmas": 2566, "totalKg": 17096.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 307.03, "kg": 15351.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 10.33, "kg": 516.5, "aplic": 0.0}, "Kieserita": {"bultos": 24.56, "kg": 1228.0, "aplic": 0.0}}}, {"lote": "Lote 54 (Guineensis)", "area": 15.19, "palmas": 2069, "totalKg": 13080.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 234.92, "kg": 11746.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 7.9, "kg": 395.0, "aplic": 0.0}, "Kieserita": {"bultos": 18.79, "kg": 939.5, "aplic": 0.0}}}, {"lote": "Lote 55 (Guineensis)", "area": 14.62, "palmas": 1991, "totalKg": 13588.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 244.04, "kg": 12202.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 8.21, "kg": 410.5, "aplic": 0.0}, "Kieserita": {"bultos": 19.52, "kg": 976.0, "aplic": 0.0}}}, {"lote": "Lote 56 (Guineensis)", "area": 20.81, "palmas": 2854, "totalKg": 19513.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 350.44, "kg": 17522.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 11.79, "kg": 589.5, "aplic": 0.0}, "Kieserita": {"bultos": 28.03, "kg": 1401.5, "aplic": 0.0}}}, {"lote": "Lote 57 (Guineensis)", "area": 10.54, "palmas": 1443, "totalKg": 6797.5, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 122.07, "kg": 6103.5, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 4.11, "kg": 205.5, "aplic": 0.0}, "Kieserita": {"bultos": 9.77, "kg": 488.5, "aplic": 0.0}}}, {"lote": "Lote 58 (Guineensis)", "area": 8.76, "palmas": 1131, "totalKg": 7445.0, "aplKg": 0.0, "avance": 0.0, "detalle": {"13-5-27": {"bultos": 135.72, "kg": 6786.0, "aplic": 0.0}, "20-3-21": {"bultos": 0.0, "kg": 0.0, "aplic": 0.0}, "Borato 48": {"bultos": 2.32, "kg": 116.0, "aplic": 0.0}, "Kieserita": {"bultos": 10.86, "kg": 543.0, "aplic": 0.0}}}];
+const RESUMEN_PALMAGRANDE = {"total_ha": 1056.31, "total_palmas": 141491, "total_kg_prog": 962256.0, "total_kg_aplic": 26100.0, "avance_pct": 2.7};
+const LOTES_DATA = {"Lote 1A (Hibrido)": {"area": 24.59, "palmas": 2442}, "Lote 2A (Hibrido)": {"area": 16.42, "palmas": 1736}, "Lote 3A (Hibrido)": {"area": 15.9, "palmas": 1668}, "Lote 4A (Hibrido)": {"area": 29.36, "palmas": 3116}, "Lote 5 (Guineensis)": {"area": 22.99, "palmas": 3234}, "Lote 6 (Guineensis)": {"area": 30.04, "palmas": 4145}, "Lote 7 (Guineensis)": {"area": 31.83, "palmas": 4418}, "Lote 8 (Guineensis)": {"area": 13.1, "palmas": 1819}, "Lote 9 (Guineensis)": {"area": 15.05, "palmas": 2089}, "Lote 10 (Guineensis)": {"area": 13.62, "palmas": 1904}, "Lote 11 (Guineensis)": {"area": 9.93, "palmas": 1361}, "Lote 11A (Guineensis)": {"area": 3.27, "palmas": 399}, "Lote 12 (Guineensis)": {"area": 12.16, "palmas": 1637}, "Lote 13 (Guineensis)": {"area": 13.98, "palmas": 1905}, "Lote 14 (Guineensis)": {"area": 16.94, "palmas": 2382}, "Lote 15 (Guineensis)": {"area": 12.3, "palmas": 1715}, "Lote 16 (Guineensis)": {"area": 19.75, "palmas": 2712}, "Lote 17 (Guineensis)": {"area": 22.82, "palmas": 3147}, "Lote 18 (Guineensis)": {"area": 10.0, "palmas": 1311}, "Lote 18A (Guineensis)": {"area": 3.5, "palmas": 476}, "Lote 19 (Guineensis)": {"area": 23.62, "palmas": 3285}, "Lote 20 (Guineensis)": {"area": 19.16, "palmas": 2583}, "Lote 21 (Guineensis)": {"area": 16.29, "palmas": 2283}, "Lote 22 (Guineensis)": {"area": 19.07, "palmas": 2545}, "Lote 23 (Guineensis)": {"area": 15.08, "palmas": 2044}, "Lote 24 (Guineensis)": {"area": 22.01, "palmas": 3061}, "Lote 25 (Guineensis)": {"area": 11.09, "palmas": 1532}, "Lote 26 (Guineensis)": {"area": 11.1, "palmas": 1545}, "Lote 27 (Guineensis)": {"area": 17.18, "palmas": 2390}, "Lote 28 (Guineensis)": {"area": 12.87, "palmas": 1741}, "Lote 29 (Guineensis)": {"area": 22.37, "palmas": 3072}, "Lote 30 (Guineensis)": {"area": 23.41, "palmas": 3233}, "Lote 31 (Guineensis)": {"area": 19.56, "palmas": 2683}, "Lote 32A (Guineensis)": {"area": 21.77, "palmas": 2956}, "Lote 33A (Guineensis)": {"area": 21.08, "palmas": 2889}, "Lote 34A (Guineensis)": {"area": 11.52, "palmas": 1565}, "Lote 35A (Guineensis)": {"area": 17.81, "palmas": 2436}, "Lote 36 (Guineensis)": {"area": 23.67, "palmas": 3284}, "Lote 37 (Guineensis)": {"area": 9.21, "palmas": 1223}, "Lote 38 (Guineensis)": {"area": 10.12, "palmas": 1432}, "Lote 39 (Guineensis)": {"area": 14.05, "palmas": 1928}, "Lote 40 (Guineensis)": {"area": 15.02, "palmas": 2066}, "Lote 41 (Guineensis)": {"area": 18.1, "palmas": 2476}, "Lote 42 (Guineensis)": {"area": 29.21, "palmas": 3897}, "Lote 43A (Guineensis)": {"area": 7.26, "palmas": 984}, "Lote 43B (Guineensis)": {"area": 6.07, "palmas": 782}, "Lote 44A (Guineensis)": {"area": 22.28, "palmas": 2935}, "Lote 45A (Guineensis)": {"area": 10.7, "palmas": 1441}, "Lote 45B (Hibrido)": {"area": 10.15, "palmas": 896}, "Lote 46 (Guineensis)": {"area": 22.65, "palmas": 3131}, "Lote 47 (Guineensis)": {"area": 24.43, "palmas": 3373}, "Lote 48 (Guineensis)": {"area": 17.31, "palmas": 2396}, "Lote 49 (Guineensis)": {"area": 23.27, "palmas": 3216}, "Lote 50 (Guineensis)": {"area": 30.03, "palmas": 4118}, "Lote 51 (Guineensis)": {"area": 18.39, "palmas": 2517}, "Lote 52 (Guineensis)": {"area": 13.59, "palmas": 1883}, "Lote 53 (Guineensis)": {"area": 18.34, "palmas": 2566}, "Lote 54 (Guineensis)": {"area": 15.19, "palmas": 2069}, "Lote 55 (Guineensis)": {"area": 14.62, "palmas": 1991}, "Lote 56 (Guineensis)": {"area": 20.81, "palmas": 2854}, "Lote 57 (Guineensis)": {"area": 10.54, "palmas": 1443}, "Lote 58 (Guineensis)": {"area": 8.76, "palmas": 1131}};
+
+
+const RONDAS_DATA = {"Lote 1A (Hibrido)": {"total_rondas": 0, "bultos_por_ronda": 0.0, "kg_por_ronda": 0.0, "rondas": []}, "Lote 2A (Hibrido)": {"total_rondas": 0, "bultos_por_ronda": 0.0, "kg_por_ronda": 0.0, "rondas": []}, "Lote 3A (Hibrido)": {"total_rondas": 0, "bultos_por_ronda": 0.0, "kg_por_ronda": 0.0, "rondas": []}, "Lote 4A (Hibrido)": {"total_rondas": 0, "bultos_por_ronda": 0.0, "kg_por_ronda": 0.0, "rondas": []}, "Lote 5 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 140.4, "kg_por_ronda": 7020.0, "rondas": [{"num": 1, "bultos_prog": 129.36, "kg_prog": 6468.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 129.36, "kg_prog": 6468.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 140.4, "kg_prog": 7020.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 6 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 184.99, "kg_por_ronda": 9249.5, "rondas": [{"num": 1, "bultos_prog": 165.8, "kg_prog": 8290.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 184.99, "kg_prog": 9249.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 7 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 174.69, "kg_por_ronda": 8734.5, "rondas": [{"num": 1, "bultos_prog": 176.72, "kg_prog": 8836.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 174.69, "kg_prog": 8734.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 8 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 79.19, "kg_por_ronda": 3959.5, "rondas": [{"num": 1, "bultos_prog": 72.76, "kg_prog": 3638.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 79.19, "kg_prog": 3959.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 9 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 98.86, "kg_por_ronda": 4943.0, "rondas": [{"num": 1, "bultos_prog": 83.56, "kg_prog": 4178.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 98.86, "kg_prog": 4943.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 10 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 90.5, "kg_por_ronda": 4525.0, "rondas": [{"num": 1, "bultos_prog": 76.16, "kg_prog": 3808.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 90.5, "kg_prog": 4525.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 11 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 62.45, "kg_por_ronda": 3122.5, "rondas": [{"num": 1, "bultos_prog": 54.44, "kg_prog": 2722.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 62.45, "kg_prog": 3122.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 11A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 15.96, "kg_por_ronda": 798.0, "rondas": [{"num": 1, "bultos_prog": 15.96, "kg_prog": 798.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 15.96, "kg_prog": 798.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 12 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 56.9, "kg_por_ronda": 2845.0, "rondas": [{"num": 1, "bultos_prog": 65.48, "kg_prog": 3274.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 56.9, "kg_prog": 2845.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 13 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 72.44, "kg_por_ronda": 3622.0, "rondas": [{"num": 1, "bultos_prog": 76.2, "kg_prog": 3810.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 72.44, "kg_prog": 3622.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 14 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 82.02, "kg_por_ronda": 4101.0, "rondas": [{"num": 1, "bultos_prog": 95.28, "kg_prog": 4764.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 82.02, "kg_prog": 4101.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 15 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 62.79, "kg_por_ronda": 3139.5, "rondas": [{"num": 1, "bultos_prog": 68.6, "kg_prog": 3430.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 62.79, "kg_prog": 3139.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 16 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 84.33, "kg_por_ronda": 4216.5, "rondas": [{"num": 1, "bultos_prog": 108.48, "kg_prog": 5424.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 84.33, "kg_prog": 4216.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 17 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 92.53, "kg_por_ronda": 4626.5, "rondas": [{"num": 1, "bultos_prog": 125.88, "kg_prog": 6294.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 92.53, "kg_prog": 4626.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 18 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 47.03, "kg_por_ronda": 2351.5, "rondas": [{"num": 1, "bultos_prog": 52.44, "kg_prog": 2622.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 47.03, "kg_prog": 2351.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 18A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 19.04, "kg_por_ronda": 952.0, "rondas": [{"num": 1, "bultos_prog": 19.04, "kg_prog": 952.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 19.04, "kg_prog": 952.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 19 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 138.65, "kg_por_ronda": 6932.5, "rondas": [{"num": 1, "bultos_prog": 131.4, "kg_prog": 6570.0, "bultos_aplic": 144.0, "kg_aplic": 7200.0, "fecha": "2026-05-25", "metodo": "Colador", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 138.65, "kg_prog": 6932.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 20 (Guineensis)": {"total_rondas": 4, "bultos_por_ronda": 101.46, "kg_por_ronda": 5073.0, "rondas": [{"num": 1, "bultos_prog": 103.32, "kg_prog": 5166.0, "bultos_aplic": 113.0, "kg_aplic": 5650.0, "fecha": "2026-05-15", "metodo": "Colador", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 101.46, "kg_prog": 5073.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 4, "bultos_prog": 101.46, "kg_prog": 5073.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 21 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 111.54, "kg_por_ronda": 5577.0, "rondas": [{"num": 1, "bultos_prog": 91.32, "kg_prog": 4566.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 111.54, "kg_prog": 5577.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 22 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 102.76, "kg_por_ronda": 5138.0, "rondas": [{"num": 1, "bultos_prog": 101.8, "kg_prog": 5090.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 102.76, "kg_prog": 5138.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 23 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 82.01, "kg_por_ronda": 4100.5, "rondas": [{"num": 1, "bultos_prog": 81.76, "kg_prog": 4088.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 82.01, "kg_prog": 4100.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 24 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 131.96, "kg_por_ronda": 6598.0, "rondas": [{"num": 1, "bultos_prog": 122.44, "kg_prog": 6122.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 131.96, "kg_prog": 6598.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 25 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 63.57, "kg_por_ronda": 3178.5, "rondas": [{"num": 1, "bultos_prog": 61.28, "kg_prog": 3064.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 63.57, "kg_prog": 3178.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 26 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 64.23, "kg_por_ronda": 3211.5, "rondas": [{"num": 1, "bultos_prog": 61.8, "kg_prog": 3090.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 64.23, "kg_prog": 3211.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 27 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 105.06, "kg_por_ronda": 5253.0, "rondas": [{"num": 1, "bultos_prog": 95.6, "kg_prog": 4780.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 105.06, "kg_prog": 5253.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 28 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 67.53, "kg_por_ronda": 3376.5, "rondas": [{"num": 1, "bultos_prog": 69.64, "kg_prog": 3482.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 67.53, "kg_prog": 3376.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 29 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 123.56, "kg_por_ronda": 6178.0, "rondas": [{"num": 1, "bultos_prog": 122.88, "kg_prog": 6144.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 123.56, "kg_prog": 6178.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 30 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 129.07, "kg_por_ronda": 6453.5, "rondas": [{"num": 1, "bultos_prog": 129.32, "kg_prog": 6466.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 129.07, "kg_prog": 6453.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 31 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 97.08, "kg_por_ronda": 4854.0, "rondas": [{"num": 1, "bultos_prog": 107.32, "kg_prog": 5366.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 97.08, "kg_prog": 4854.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 32A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 114.28, "kg_por_ronda": 5714.0, "rondas": [{"num": 1, "bultos_prog": 118.24, "kg_prog": 5912.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 114.28, "kg_prog": 5714.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 33A (Guineensis)": {"total_rondas": 2, "bultos_por_ronda": 127.62, "kg_por_ronda": 6381.0, "rondas": [{"num": 1, "bultos_prog": 115.56, "kg_prog": 5778.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 34A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 60.93, "kg_por_ronda": 3046.5, "rondas": [{"num": 1, "bultos_prog": 62.6, "kg_prog": 3130.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 60.93, "kg_prog": 3046.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 35A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 90.54, "kg_por_ronda": 4527.0, "rondas": [{"num": 1, "bultos_prog": 97.44, "kg_prog": 4872.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 90.54, "kg_prog": 4527.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 36 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 144.34, "kg_por_ronda": 7217.0, "rondas": [{"num": 1, "bultos_prog": 131.36, "kg_prog": 6568.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 144.34, "kg_prog": 7217.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 37 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 43.16, "kg_por_ronda": 2158.0, "rondas": [{"num": 1, "bultos_prog": 48.92, "kg_prog": 2446.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 43.16, "kg_prog": 2158.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 38 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 58.74, "kg_por_ronda": 2937.0, "rondas": [{"num": 1, "bultos_prog": 57.28, "kg_prog": 2864.0, "bultos_aplic": 30.0, "kg_aplic": 1500.0, "fecha": "2026-05-27", "metodo": "", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 58.74, "kg_prog": 2937.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 39 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 74.84, "kg_por_ronda": 3742.0, "rondas": [{"num": 1, "bultos_prog": 77.12, "kg_prog": 3856.0, "bultos_aplic": 35.0, "kg_aplic": 1750.0, "fecha": "2026-05-27", "metodo": "", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 74.84, "kg_prog": 3742.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 40 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 101.19, "kg_por_ronda": 5059.5, "rondas": [{"num": 1, "bultos_prog": 82.64, "kg_prog": 4132.0, "bultos_aplic": 86.0, "kg_aplic": 4300.0, "fecha": "2026-05-20", "metodo": "Colador", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 101.19, "kg_prog": 5059.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 41 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 97.32, "kg_por_ronda": 4866.0, "rondas": [{"num": 1, "bultos_prog": 99.04, "kg_prog": 4952.0, "bultos_aplic": 114.0, "kg_aplic": 5700.0, "fecha": "2026-05-19", "metodo": "Colador", "aplicador": "", "estado": "ejecutado"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 97.32, "kg_prog": 4866.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 42 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 168.13, "kg_por_ronda": 8406.5, "rondas": [{"num": 1, "bultos_prog": 155.88, "kg_prog": 7794.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 168.13, "kg_prog": 8406.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 43A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 48.38, "kg_por_ronda": 2419.0, "rondas": [{"num": 1, "bultos_prog": 39.36, "kg_prog": 1968.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 48.38, "kg_prog": 2419.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 43B (Guineensis)": {"total_rondas": 2, "bultos_por_ronda": 38.67, "kg_por_ronda": 1933.5, "rondas": [{"num": 1, "bultos_prog": 31.28, "kg_prog": 1564.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 44A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 115.84, "kg_por_ronda": 5792.0, "rondas": [{"num": 1, "bultos_prog": 117.4, "kg_prog": 5870.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 115.84, "kg_prog": 5792.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 45A (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 60.11, "kg_por_ronda": 3005.5, "rondas": [{"num": 1, "bultos_prog": 57.64, "kg_prog": 2882.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 60.11, "kg_prog": 3005.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 45B (Hibrido)": {"total_rondas": 2, "bultos_por_ronda": 0.0, "kg_por_ronda": 0.0, "rondas": [{"num": 1, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 46 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 110.73, "kg_por_ronda": 5536.5, "rondas": [{"num": 1, "bultos_prog": 125.24, "kg_prog": 6262.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 110.73, "kg_prog": 5536.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 47 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 141.28, "kg_por_ronda": 7064.0, "rondas": [{"num": 1, "bultos_prog": 134.92, "kg_prog": 6746.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 141.28, "kg_prog": 7064.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 48 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 91.87, "kg_por_ronda": 4593.5, "rondas": [{"num": 1, "bultos_prog": 95.84, "kg_prog": 4792.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 91.87, "kg_prog": 4593.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 49 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 155.85, "kg_por_ronda": 7792.5, "rondas": [{"num": 1, "bultos_prog": 128.64, "kg_prog": 6432.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 155.85, "kg_prog": 7792.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 50 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 177.53, "kg_por_ronda": 8876.5, "rondas": [{"num": 1, "bultos_prog": 164.72, "kg_prog": 8236.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 177.53, "kg_prog": 8876.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 51 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 127.85, "kg_por_ronda": 6392.5, "rondas": [{"num": 1, "bultos_prog": 100.68, "kg_prog": 5034.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 127.85, "kg_prog": 6392.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 52 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 80.22, "kg_por_ronda": 4011.0, "rondas": [{"num": 1, "bultos_prog": 75.32, "kg_prog": 3766.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 80.22, "kg_prog": 4011.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 53 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 102.34, "kg_por_ronda": 5117.0, "rondas": [{"num": 1, "bultos_prog": 102.64, "kg_prog": 5132.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 102.34, "kg_prog": 5117.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 54 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 78.31, "kg_por_ronda": 3915.5, "rondas": [{"num": 1, "bultos_prog": 82.76, "kg_prog": 4138.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 78.31, "kg_prog": 3915.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 55 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 81.35, "kg_por_ronda": 4067.5, "rondas": [{"num": 1, "bultos_prog": 79.64, "kg_prog": 3982.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 81.35, "kg_prog": 4067.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 56 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 116.81, "kg_por_ronda": 5840.5, "rondas": [{"num": 1, "bultos_prog": 114.16, "kg_prog": 5708.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 116.81, "kg_prog": 5840.5, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 57 (Guineensis)": {"total_rondas": 2, "bultos_por_ronda": 61.03, "kg_por_ronda": 3051.5, "rondas": [{"num": 1, "bultos_prog": 57.72, "kg_prog": 2886.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}, "Lote 58 (Guineensis)": {"total_rondas": 3, "bultos_por_ronda": 45.24, "kg_por_ronda": 2262.0, "rondas": [{"num": 1, "bultos_prog": 45.24, "kg_prog": 2262.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 2, "bultos_prog": 0.0, "kg_prog": 0.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}, {"num": 3, "bultos_prog": 45.24, "kg_prog": 2262.0, "bultos_aplic": 0.0, "kg_aplic": 0.0, "fecha": "", "metodo": "", "aplicador": "", "estado": "pendiente"}]}};
+const MOD_NAMES  = {dashboard:'Dashboard',salida:'Salida Almacén',aplicacion:'Aplicación Campo',devolucion:'Devoluciones',inventario:'Inventario',plan:'Plan Fertilización',novedades:'Novedades',sync:'Sincronización'};
+
+/* ── Helpers LS ─────────────────────── */
+const lsGet = (k,d)  => { try { const v=localStorage.getItem('fpg_'+k); return v!==null?JSON.parse(v):d; } catch(e){ return d; } };
+const lsSet = (k,v)  => { try { localStorage.setItem('fpg_'+k,JSON.stringify(v)); } catch(e){} };
+const lsPush = (k,item) => { const a=lsGet(k,[]); a.push(item); lsSet(k,a); return a; };
+
+/* ── Helpers fecha/num ──────────────── */
+const hoy    = () => new Date().toISOString().split('T')[0];
+const ahora  = () => new Date().toISOString();
+const fmtD   = iso => { if(!iso)return'—'; try{ return new Date(iso).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){return iso;} };
+const fmtN   = n  => Math.round(n).toLocaleString('es-CO');
+const fmtDec = (n,d=1) => Number(n).toFixed(d);
+const genId  = p  => p+'-'+Date.now().toString(36).toUpperCase();
+const g      = id => document.getElementById(id);
+const gv     = id => { const e=g(id); return e?e.value:''; };
+const sv     = (id,val) => { const e=g(id); if(e) e.value=val; };
+
+/* ── Inventario ─────────────────────── */
+const getInv  = ()    => lsGet('inv', Object.fromEntries(PRODUCTOS.map(p=>[p,0])));
+const getStock= p     => (getInv()[p] ?? 0);
+const adjStock= (p,d) => { const inv=getInv(); inv[p]=Math.max(0,(inv[p]??0)+d); lsSet('inv',inv); };
+
+/* ── Estado app ─────────────────────── */
+let pinBuffer = [];
+let rolActivo = 'almacen';
+let gasUrl    = '';
+
+/* ────────────────────────────────────── */
+/* Todo corre DESPUÉS de que el DOM esté listo */
+/* ────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+
+  gasUrl = localStorage.getItem('fpg_gas') || '';
+
+  /* ── Toast ──────────────────────────── */
+  function toast(msg, tipo, ms) {
+    tipo = tipo || 'success'; ms = ms || 2800;
+    var t = g('toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.className = 'toast show ' + tipo;
+    setTimeout(function(){ t.className = 'toast'; }, ms);
+  }
+
+  /* ── PIN ────────────────────────────── */
+  function renderDots() {
+    for(var i=0;i<5;i++){
+      var d=g('pd'+i);
+      if(d) d.className = 'pd' + (i < pinBuffer.length ? ' on' : '');
+    }
+  }
+
+  var ROLE_DESC = {
+    almacen:    'Salidas · Devoluciones · Inventario',
+    supervisor: 'Aplicación · Plan · Novedades',
+    direccion:  'Acceso completo al sistema',
+    consulta:   'Solo Dashboard (solo lectura)',
+  };
+
+  document.querySelectorAll('.role-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.role-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      rolActivo = btn.getAttribute('data-role');
+      pinBuffer = [];
+      renderDots();
+      var desc = g('role-desc');
+      if(desc) desc.textContent = ROLE_DESC[rolActivo] || '';
+    });
+  });
+
+  document.querySelectorAll('.nk').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var k = btn.getAttribute('data-k');
+      if(k==='C')       { pinBuffer.pop(); }
+      else if(k==='OK') { handleLogin(); return; }
+      else if(pinBuffer.length < 5) { pinBuffer.push(k); }
+      renderDots();
+      btn.style.transform='scale(0.93)';
+      setTimeout(function(){ btn.style.transform=''; }, 120);
+    });
+  });
+
+  function handleLogin() {
+    var entered = pinBuffer.join('');
+    if(entered === PINS[rolActivo]) {
+      if(g('login-err')) g('login-err').textContent = '';
+      g('screen-login').classList.remove('active');
+      g('screen-app').classList.add('active');
+      if(g('role-pill')) {
+      g('role-pill').textContent = rolActivo.toUpperCase();
+      var colors = {almacen:'#4ade80',supervisor:'#60a5fa',direccion:'#fbbf24',consulta:'#9ca3af'};
+      g('role-pill').style.color = colors[rolActivo] || '';
+      g('role-pill').style.borderColor = (colors[rolActivo]||'') + '55';
+    }
+      pinBuffer = [];
+      renderDots();
+      initApp();
+      aplicarPermisos(rolActivo);
+    } else {
+      var msg = pinBuffer.length===5 ? 'PIN incorrecto — intente de nuevo' : 'Ingrese los 5 dígitos';
+      if(g('login-err')) g('login-err').textContent = msg;
+      pinBuffer = [];
+      renderDots();
+    }
+  }
+
+  /* ── Init App ───────────────────────── */
+  function initApp() {
+    llenarSelects();
+    actualizarOnline();
+    window.addEventListener('online',  actualizarOnline);
+    window.addEventListener('offline', actualizarOnline);
+    if(g('gas-url')) g('gas-url').value = gasUrl;
+    var p = PERMISOS[rolActivo];
+    var primerMod = (p && p.nav.length > 0) ? p.nav[0] : 'dashboard';
+    navTo(primerMod);
+  }
+
+
+  function llenarSelects() {
+    /* Lotes */
+    document.querySelectorAll('select').forEach(function(sel){
+      var id = sel.id || '';
+      if(id.indexOf('lote') !== -1) {
+        sel.innerHTML = '<option value="">— Seleccionar —</option>';
+        LOTES.forEach(function(l){ sel.innerHTML += '<option>'+l+'</option>'; });
+      }
+      if(id.indexOf('prod') !== -1) {
+        sel.innerHTML = '<option value="">— Seleccionar —</option>';
+        PRODUCTOS.forEach(function(p){ sel.innerHTML += '<option>'+p+'</option>'; });
+      }
+    });
+  }
+
+  /* ── Online ─────────────────────────── */
+  function actualizarOnline() {
+    var on = navigator.onLine;
+    var cls = 'online-dot ' + (on ? 'online' : 'offline');
+    ['online-dot','online-dot-2'].forEach(function(id){ var e=g(id); if(e) e.className=cls; });
+    var st = g('sidebar-sync-txt');
+    if(st) st.textContent = on ? '● En línea' : '○ Sin conexión';
+  }
+
+  /* ── Navegación ─────────────────────── */
+  function navTo(mod) {
+    // Guard: solo permitir módulos del rol activo
+    var p = PERMISOS[rolActivo];
+    if(p && p.nav.indexOf(mod) === -1) {
+      mod = p.nav[0] || 'dashboard';
+    }
+    document.querySelectorAll('.module').forEach(function(m){ m.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(a){ a.classList.remove('active'); });
+
+    var el = g('mod-'+mod);
+    if(el) el.classList.add('active');
+
+    var na = document.querySelector('.nav-item[data-mod="'+mod+'"]');
+    if(na) na.classList.add('active');
+
+    var hm = g('hdr-mod');
+    if(hm) hm.textContent = MOD_NAMES[mod] || mod;
+
+    try {
+      if(mod==='dashboard')  renderDashboard();
+      if(mod==='salida')     { setAutoSal(); renderSalidas(); }
+      if(mod==='aplicacion') { sv('apl-fecha', hoy()); renderApls(); }
+      if(mod==='devolucion') { sv('dev-fecha', hoy()); renderDevs(); }
+      if(mod==='inventario') renderStock();
+      if(mod==='plan')       renderPlan();
+      if(mod==='novedades')  { sv('nov-fecha', hoy()); renderNovs(); }
+      if(mod==='sync')       renderSync();
+    } catch(e) { console.error('navTo error:', e); }
+  }
+
+  /* Listeners menú */
+  if(g('menu-toggle')) g('menu-toggle').addEventListener('click', function(){ abrirMenu(); });
+  if(g('sidebar-close'))    g('sidebar-close').addEventListener('click',    function(){ cerrarMenu(); });
+  if(g('sidebar-overlay'))  g('sidebar-overlay').addEventListener('click',  function(){ cerrarMenu(); });
+  if(g('logout-btn')) g('logout-btn').addEventListener('click', function(e){
+    e.preventDefault(); cerrarMenu();
+    // Resetear sidebar
+    document.querySelectorAll('.nav-item[data-mod]').forEach(function(a){ a.parentElement.style.display=''; });
+    document.querySelectorAll('.nav-sep').forEach(function(s){ s.style.display=''; });
+    pinBuffer=[]; renderDots();
+    g('screen-app').classList.remove('active');
+    g('screen-login').classList.add('active');
+  });
+
+  document.querySelectorAll('.nav-item[data-mod]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      navTo(a.getAttribute('data-mod'));
+      cerrarMenu();
+    });
+  });
+
+  function abrirMenu() {
+    if(g('sidebar'))         g('sidebar').classList.add('open');
+    if(g('sidebar-overlay')) g('sidebar-overlay').classList.add('active');
+  }
+  function cerrarMenu() {
+    if(g('sidebar'))         g('sidebar').classList.remove('open');
+    if(g('sidebar-overlay')) g('sidebar-overlay').classList.remove('active');
+  }
+
+  /* ── Dashboard ──────────────────────── */
+  function renderDashboard() {
+    var t = hoy();
+    var sals = lsGet('salidas',[]).filter(function(r){ return r.fecha===t; });
+    var apls = lsGet('aplicaciones',[]).filter(function(r){ return r.fecha===t; });
+    var devs = lsGet('devoluciones',[]).filter(function(r){ return r.fecha===t; });
+    var plan = lsGet('plan',[]);
+
+    var kgApl  = sumar(apls, 'aplKg');
+    var kgDesp = sumar(sals, 'totalKg');
+    var kgDev  = sumar(devs, 'cant');
+    var haFert = sumar(apls, 'ha');
+    var lts    = new Set(apls.map(function(r){ return r.lote; })).size;
+    var planKg = sumar(plan, 'totalKg');
+    var cumpl  = planKg>0 ? Math.round((kgApl/planKg)*100) : 0;
+
+    setText('kpi-aplicados',     fmtN(kgApl));
+    setText('kpi-aplicados-sub', kgDesp>0 ? 'de '+fmtN(kgDesp)+' kg despachados' : 'Sin despachos hoy');
+    setText('kpi-despachados',   fmtN(kgDesp));
+    setText('kpi-devueltos',     fmtN(kgDev));
+    setText('kpi-ha',            fmtDec(haFert));
+    setText('kpi-lotes',         lts);
+    setText('prog-pct',          cumpl+'%');
+    var pf = g('prog-fill'); if(pf) pf.style.width = Math.min(cumpl,100)+'%';
+    setText('prog-apl',  fmtN(kgApl)+' kg aplicados');
+    setText('prog-meta', 'Meta: '+fmtN(planKg)+' kg');
+
+    /* Alertas */
+    var inv = getInv();
+    var alerts = [];
+    PRODUCTOS.forEach(function(p){
+      var s=inv[p]||0, m=PROD_MIN[p]||0;
+      if(s===0)  alerts.push({t:'crit',msg:'Sin stock: '+p});
+      else if(s<m) alerts.push({t:'warn',msg:'Stock bajo: '+p+' — '+fmtN(s)+' kg (mín '+fmtN(m)+' kg)'});
+    });
+    var novPend = lsGet('novedades',[]).filter(function(n){ return n.resuelto==='No'; }).length;
+    if(novPend>0) alerts.push({t:'warn',msg:novPend+' novedad(es) sin resolver'});
+    var pend = ['salidas','aplicaciones','devoluciones','entradas','ajustes','plan','novedades']
+      .reduce(function(s,k){ return s + lsGet(k,[]).filter(function(r){ return !r._sync; }).length; }, 0);
+    if(pend>0) alerts.push({t:'warn',msg:pend+' registro(s) pendientes de sincronizar'});
+
+    var ael = g('dash-alertas');
+    if(ael) {
+      if(alerts.length===0) {
+        ael.innerHTML = '<div class="alert-item a-ok"><div class="adot"></div><span>Sistema OK — sin alertas activas</span></div>';
+      } else {
+        ael.innerHTML = alerts.map(function(a){
+          return '<div class="alert-item a-'+a.t+'"><div class="adot"></div><span>'+a.msg+'</span></div>';
+        }).join('');
+      }
+    }
+    renderList('dash-salidas', lsGet('salidas',[]).slice(-4).reverse(), salItem);
+    renderList('dash-apls',    lsGet('aplicaciones',[]).slice(-4).reverse(), aplItem);
+  }
+
+  /* ── Salida ─────────────────────────── */
+  function setAutoSal() {
+    sv('sal-cons', 'SAL-'+String(lsGet('salidas',[]).length+1).padStart(4,'0'));
+    sv('sal-fecha', hoy());
+  }
+
+  window.updateStockBadge = function() {
+    var prod = gv('sal-prod');
+    var wrap = g('sal-stock-wrap');
+    if(!wrap) return;
+    if(!prod) { wrap.innerHTML=''; return; }
+    var stock=getStock(prod), min=PROD_MIN[prod]||0;
+    var cls = stock<min ? 'sp-low' : 'sp-ok';
+    wrap.innerHTML = '<div class="stock-pill '+cls+'"><span class="sp-dot"></span>Stock: '+fmtN(stock)+' kg &nbsp;·&nbsp; Mínimo: '+fmtN(min)+' kg</div>';
+    calcSalida();
+  };
+
+  window.calcSalida = function() {
+    var b=parseFloat(gv('sal-bultos'))||0;
+    var p=parseFloat(gv('sal-kgbulto'))||0;
+    var total=b*p;
+    var wrap=g('sal-total-wrap');
+    if(!wrap) return;
+    if(b>0 && p>0) {
+      wrap.style.display='block';
+      setText('sal-total-val', fmtN(total)+' kg');
+      setText('sal-stock-val', gv('sal-prod') ? fmtN(getStock(gv('sal-prod')))+' kg' : '—');
+    } else { wrap.style.display='none'; }
+  };
+
+  window.guardarSalida = function() {
+    var resp=gv('sal-resp').trim();
+    var sup = gv('sal-sup')==='__otro__' ? gv('sal-sup-otro').trim() : gv('sal-sup');
+    var lote=gv('sal-lote'), prod=gv('sal-prod');
+    var bultos=parseFloat(gv('sal-bultos'))||0, kgb=parseFloat(gv('sal-kgbulto'))||0;
+    var totalKg=bultos*kgb;
+    if(!resp) return toast('Ingrese el responsable','error');
+    if(!sup)  return toast('Seleccione o escriba el supervisor','error');
+    if(!lote) return toast('Seleccione lote','error');
+    if(!prod) return toast('Seleccione producto','error');
+    if(totalKg<=0) return toast('Ingrese cantidad válida','error');
+    if(totalKg>getStock(prod)) return toast('Stock insuficiente ('+fmtN(getStock(prod))+' kg disponibles)','error');
+    lsPush('salidas',{
+      id:genId('SAL'), consecutivo:gv('sal-cons'), fecha:hoy(),
+      responsable:resp, supervisor:sup, lote:lote, producto:prod,
+      presentacion:gv('sal-pres'), bultos:bultos, kgBulto:kgb, totalKg:totalKg,
+      vehiculo:gv('sal-veh'), conductor:gv('sal-cond'), observacion:gv('sal-obs'),
+      _sync:false, _ts:ahora()
+    });
+    adjStock(prod, -totalKg);
+    toast('Salida registrada — '+fmtN(totalKg)+' kg de '+prod);
+    resetFields(['sal-resp','sal-sup','sal-lote','sal-prod','sal-pres','sal-bultos','sal-kgbulto','sal-veh','sal-cond','sal-obs']);
+    var sw=g('sal-stock-wrap'); if(sw) sw.innerHTML='';
+    var tw=g('sal-total-wrap'); if(tw) tw.style.display='none';
+    setAutoSal(); renderSalidas();
+  };
+
+  function renderSalidas() { renderList('sal-list', lsGet('salidas',[]).slice().reverse(), salItem); }
+  function salItem(r) {
+    return '<div class="rec'+(r._sync?'':' pending')+'">' +
+      '<div class="rec-top"><span class="rec-main">'+(r.consecutivo||'—')+' — '+(r.lote||'—')+'</span><span class="badge b-green">'+fmtN(r.totalKg||0)+' kg</span></div>' +
+      '<div class="rec-sub">'+(r.producto||'—')+' · '+(r.supervisor||'—')+'</div>' +
+      '<div class="rec-meta">'+fmtD(r.fecha)+'<span class="'+(r._sync?'sync-ok':'sync-pend')+'">'+(r._sync?'✓ sync':'● pend.')+'</span></div>' +
+      '</div>';
+  }
+
+  /* ── Aplicación ─────────────────────── */
+  window.calcApl = function() {
+    var rec=parseFloat(gv('apl-rec'))||0, apl=parseFloat(gv('apl-apl'))||0;
+    var ha=parseFloat(gv('apl-ha'))||0, palm=parseFloat(gv('apl-palm'))||0;
+    var jorn=parseFloat(gv('apl-jorn'))||0;
+    setText('c-sob',  fmtDec(rec-apl)+' kg');
+    setText('c-ha',   ha>0   ? fmtDec(apl/ha,2)+' kg/ha'      : '—');
+    setText('c-palm', palm>0 ? fmtDec(apl/palm,3)+' kg/palma' : '—');
+    setText('c-kjorn',jorn>0 ? fmtDec(apl/jorn)+' kg/j'       : '—');
+    setText('c-hjorn',jorn>0 ? fmtDec(ha/jorn,2)+' ha/j'      : '—');
+  };
+
+  window.guardarAplicacion = function() {
+    var fecha=gv('apl-fecha'), lote=gv('apl-lote'), sup=gv('apl-sup'), prod=gv('apl-prod');
+    var rec=parseFloat(gv('apl-rec'))||0, apl=parseFloat(gv('apl-apl'))||0;
+    var ha=parseFloat(gv('apl-ha'))||0, palm=parseFloat(gv('apl-palm'))||0;
+    var cuad=gv('apl-cuad'), jorn=parseFloat(gv('apl-jorn'))||0;
+    var estEl=document.querySelector('input[name="apl-est"]:checked');
+    var estado=estEl?estEl.value:'Completo';
+    if(!fecha) return toast('Ingrese la fecha','error');
+    if(!lote)  return toast('Seleccione lote','error');
+    if(!prod)  return toast('Seleccione producto','error');
+    if(apl<=0) return toast('Ingrese kg aplicados','error');
+    if(ha<=0)  return toast('Ingrese área aplicada','error');
+    lsPush('aplicaciones',{
+      id:genId('APL'), fecha:fecha, lote:lote, supervisor:sup, producto:prod,
+      recKg:rec, aplKg:apl, ha:ha, palmas:palm, cuadrilla:cuad, jornales:jorn,
+      dosisHa:ha>0?apl/ha:0, dosisPalma:palm>0?apl/palm:0,
+      kgJornal:jorn>0?apl/jorn:0, haJornal:jorn>0?ha/jorn:0,
+      sobrante:rec-apl, estado:estado, obs:gv('apl-obs'),
+      _sync:false, _ts:ahora()
+    });
+    toast('Aplicación registrada — '+fmtN(apl)+' kg en '+lote);
+    resetFields(['apl-lote','apl-sup','apl-prod','apl-rec','apl-apl','apl-ha','apl-palm','apl-cuad','apl-jorn','apl-obs']);
+    window.calcApl(); renderApls();
+  };
+
+  function renderApls() { renderList('apl-list', lsGet('aplicaciones',[]).slice().reverse(), aplItem); }
+  function aplItem(r) {
+    var bc = r.estado==='Completo'?'b-green':r.estado==='Parcial'?'b-amber':'b-red';
+    return '<div class="rec'+(r._sync?'':' pending')+'">' +
+      '<div class="rec-top"><span class="rec-main">'+(r.lote||'—')+' — '+(r.producto||'—')+'</span><span class="badge '+bc+'">'+(r.estado||'—')+'</span></div>' +
+      '<div class="rec-sub">'+(r.supervisor||'—')+' · '+fmtDec(r.ha||0)+' ha · '+fmtN(r.aplKg||0)+' kg</div>' +
+      '<div class="rec-meta">'+fmtD(r.fecha)+' · '+fmtDec(r.dosisHa||0,1)+' kg/ha<span class="'+(r._sync?'sync-ok':'sync-pend')+'">'+(r._sync?'✓ sync':'● pend.')+'</span></div>' +
+      '</div>';
+  }
+
+  /* ── Devolución ─────────────────────── */
+  window.calcDev = function() {
+    var lote=gv('dev-lote'), prod=gv('dev-prod');
+    if(!lote||!prod) return;
+    var sal=sumar(lsGet('salidas',[]).filter(function(r){ return r.lote===lote&&r.producto===prod; }),'totalKg');
+    var apl=sumar(lsGet('aplicaciones',[]).filter(function(r){ return r.lote===lote&&r.producto===prod; }),'aplKg');
+    var devAcum=sumar(lsGet('devoluciones',[]).filter(function(r){ return r.lote===lote&&r.producto===prod; }),'cant');
+    var devAct=parseFloat(gv('dev-cant'))||0;
+    var totalDev=devAcum+devAct, dif=sal-apl-totalDev;
+    setText('con-sal', fmtN(sal)+' kg');
+    setText('con-apl', fmtN(apl)+' kg');
+    setText('con-dev', fmtN(totalDev)+' kg');
+    setText('con-dif', fmtDec(dif)+' kg');
+    var sem=g('con-sem');
+    if(sem) {
+      if(Math.abs(dif)===0)    { sem.textContent='✓ Conciliación perfecta';           sem.className='semaforo sem-verde'; }
+      else if(Math.abs(dif)<=10){ sem.textContent='△ Diferencia tolerable: '+fmtDec(dif)+' kg'; sem.className='semaforo sem-amarillo'; }
+      else                       { sem.textContent='✕ Diferencia crítica: '+fmtDec(dif)+' kg';   sem.className='semaforo sem-rojo'; }
+    }
+  };
+
+  window.guardarDevolucion = function() {
+    var lote=gv('dev-lote'), prod=gv('dev-prod');
+    var cant=parseFloat(gv('dev-cant'))||0, resp=gv('dev-resp').trim();
+    if(!lote) return toast('Seleccione lote','error');
+    if(!prod) return toast('Seleccione producto','error');
+    if(cant<=0) return toast('Ingrese cantidad devuelta','error');
+    if(!resp)  return toast('Ingrese responsable','error');
+    lsPush('devoluciones',{
+      id:genId('DEV'), fecha:gv('dev-fecha'), lote:lote, producto:prod, cant:cant,
+      estadoMat:gv('dev-estmat'), responsable:resp, obs:gv('dev-obs'),
+      _sync:false, _ts:ahora()
+    });
+    adjStock(prod, cant);
+    toast('Devolución registrada — '+fmtN(cant)+' kg de '+prod);
+    resetFields(['dev-lote','dev-prod','dev-cant','dev-resp','dev-obs']);
+    var sem=g('con-sem'); if(sem){ sem.textContent='—'; sem.className='semaforo'; }
+    renderDevs();
+  };
+
+  function renderDevs() {
+    renderList('dev-list', lsGet('devoluciones',[]).slice().reverse(), function(r){
+      return '<div class="rec'+(r._sync?'':' pending')+'">' +
+        '<div class="rec-top"><span class="rec-main">'+(r.lote||'—')+' — '+(r.producto||'—')+'</span><span class="badge b-blue">'+fmtN(r.cant||0)+' kg</span></div>' +
+        '<div class="rec-sub">'+(r.estadoMat||'—')+' · '+(r.responsable||'—')+'</div>' +
+        '<div class="rec-meta">'+fmtD(r.fecha)+'<span class="'+(r._sync?'sync-ok':'sync-pend')+'">'+(r._sync?'✓ sync':'● pend.')+'</span></div>' +
+        '</div>';
+    });
+  }
+
+  /* ── Inventario ─────────────────────── */
+  window.invTab = function(evt, name) {
+    document.querySelectorAll('.inv-tab').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.inv-panel').forEach(function(p){ p.classList.remove('active'); });
+    if(evt && evt.target) evt.target.classList.add('active');
+    var panel=g('inv-'+name); if(panel) panel.classList.add('active');
+    if(name==='stock') renderStock();
+  };
+
+  function renderStock() {
+    var inv=getInv();
+    var grid=g('stock-grid');
+    if(!grid) return;
+    grid.innerHTML = PRODUCTOS.map(function(p){
+      var s=inv[p]||0, m=PROD_MIN[p]||0;
+      var pct=m>0?Math.min((s/(m*3))*100,100):s>0?100:0;
+      var fCls=s===0?'background:#f87171':s<m?'background:#fbbf24':'background:#4ade80';
+      var sCls=s===0?'st-crit':s<m?'st-warn':'st-ok';
+      var sTxt=s===0?'SIN STOCK':s<m?'BAJO':'OK';
+      return '<div class="si">' +
+        '<div class="si-icon">'+(PROD_ICONS[p]||'📦')+'</div>' +
+        '<div class="si-info">' +
+          '<div class="si-name">'+p+'</div>' +
+          '<div class="si-qty">'+fmtN(s)+' <span>kg</span></div>' +
+          '<div class="si-bar"><div class="si-fill" style="width:'+pct+'%;'+fCls+'"></div></div>' +
+        '</div>' +
+        '<div class="si-right">' +
+          '<div class="si-status '+sCls+'">'+sTxt+'</div>' +
+          '<div style="font-size:9px;color:var(--txt3);font-weight:600;margin-top:4px">mín '+fmtN(m)+'</div>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  window.guardarEntrada = function() {
+    var prod=gv('ent-prod'), cant=parseFloat(gv('ent-cant'))||0;
+    if(!prod) return toast('Seleccione producto','error');
+    if(cant<=0) return toast('Ingrese cantidad válida','error');
+    lsPush('entradas',{ id:genId('ENT'), fecha:gv('ent-fecha'), producto:prod, cant:cant, proveedor:gv('ent-prov'), remision:gv('ent-rem'), obs:gv('ent-obs'), _sync:false, _ts:ahora() });
+    adjStock(prod, cant);
+    toast('Entrada registrada — '+fmtN(cant)+' kg de '+prod);
+    resetFields(['ent-prod','ent-cant','ent-prov','ent-rem','ent-obs']);
+    renderStock();
+  };
+
+  window.guardarAjuste = function() {
+    var prod=gv('adj-prod'), cant=parseFloat(gv('adj-cant'))||0, mot=gv('adj-mot').trim();
+    var tipoEl=document.querySelector('input[name="adj-tipo"]:checked');
+    var tipo=tipoEl?tipoEl.value:'suma';
+    if(!prod) return toast('Seleccione producto','error');
+    if(cant<=0) return toast('Ingrese cantidad','error');
+    if(!mot)   return toast('Ingrese motivo','error');
+    var delta=tipo==='suma'?cant:-cant;
+    lsPush('ajustes',{ id:genId('ADJ'), fecha:hoy(), producto:prod, tipo:tipo, cant:cant, delta:delta, motivo:mot, _sync:false, _ts:ahora() });
+    adjStock(prod, delta);
+    toast('Ajuste aplicado: '+(tipo==='suma'?'+':'-')+fmtN(cant)+' kg de '+prod);
+    resetFields(['adj-prod','adj-cant','adj-mot']);
+    renderStock();
+  };
+
+  /* ── Plan ───────────────────────────── */
+  /* calcPlan removed */;
+
+  /* guardarPlan removed */;
+
+  function renderPlan() {
+    var el = g('plan-list');
+    if(!el) return;
+    var configs = lsGet('plan_config', {});
+    var execs   = lsGet('plan_rondas', {});
+
+    // Unir lotes del Excel + lotes con config local
+    var lotesConPlan = [];
+    PLAN_PALMAGRANDE.forEach(function(p){ if(p.totalKg>0) lotesConPlan.push(p.lote); });
+    Object.keys(configs).forEach(function(l){ if(lotesConPlan.indexOf(l)===-1) lotesConPlan.push(l); });
+
+    if(lotesConPlan.length === 0) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">◌</div>Sin plan configurado</div>';
+      return;
+    }
+
+    el.innerHTML = lotesConPlan.map(function(lote) {
+      var cfg    = configs[lote] || {};
+      var exLote = execs[lote]   || {};
+      var nR     = cfg.rondas    || (RONDAS_DATA[lote] && RONDAS_DATA[lote].total_rondas) || 0;
+      var fert   = cfg.fertilizante || '13-5-27';
+      var totalKg= cfg.total_kg  || (PLAN_PALMAGRANDE.find(function(p){return p.lote===lote;})||{}).totalKg || 0;
+      var palmas = cfg.palmas    || (LOTES_DATA[lote]||{}).palmas || 0;
+      var area   = cfg.area      || (LOTES_DATA[lote]||{}).area   || 0;
+
+      // Calcular avance desde ejecuciones
+      var kgAplicTotal = 0, ejecutadas = 0;
+      for(var i=1; i<=nR; i++) {
+        var ex = exLote['ronda'+i] || {};
+        kgAplicTotal += ex.kg_aplic || 0;
+        if(ex.estado==='ejecutado') ejecutadas++;
+      }
+      var pct = totalKg > 0 ? Math.round((kgAplicTotal/totalKg)*100) : 0;
+      var est = ejecutadas>=nR && nR>0 ? 'Completo' : ejecutadas>0 ? 'En curso' : cfg.rondas ? 'Configurado' : 'Sin plan';
+      var bc  = est==='Completo'?'b-green':est==='En curso'?'b-amber':est==='Configurado'?'b-blue':'b-gray';
+
+      // Resumen de dosis por ronda
+      var rondasResumen = '';
+      if(cfg.rondas_dosis && nR > 0) {
+        var partes = [];
+        for(var j=1; j<=nR; j++) {
+          var kgR = cfg.rondas_dosis['r'+j] || 0;
+          var exR = exLote['ronda'+j] || {};
+          var icoR = exR.estado==='ejecutado'?'✅':exR.estado==='en_curso'?'🔄':'⏳';
+          partes.push('R'+j+': '+icoR+' '+(kgR>0?kgR.toLocaleString('es-CO')+' kg':'—'));
+        }
+        rondasResumen = partes.join('  ·  ');
+      }
+
+      return '<div class="rec">'+
+        '<div class="rec-top">'+
+          '<span class="rec-main">'+lote+'</span>'+
+          '<span class="badge '+bc+'">'+est+'</span>'+
+        '</div>'+
+        '<div class="rec-sub">'+fert+' · '+palmas.toLocaleString('es-CO')+' palmas · '+area+' ha · '+(totalKg>0?totalKg.toLocaleString('es-CO')+' kg':'sin total')+'</div>'+
+        (rondasResumen ? '<div class="rec-meta" style="flex-wrap:wrap;gap:4px">'+rondasResumen+'</div>' : '')+
+        (pct>0 ? '<div class="rec-meta">Avance: '+pct+'% ('+kgAplicTotal.toLocaleString('es-CO')+' kg aplicados)</div>' : '')+
+        '</div>';
+    }).join('');
+  }
+
+  /* ── Plan de Fertilización ──────────────────── */
+
+  window.planSeleccionarLote = function() {
+    var lote  = gv('plan-lote');
+    var panel = g('plan-lote-panel');
+    var regCard = g('plan-registro-card');
+    var rondaForm = g('plan-ronda-form');
+    if(rondaForm) rondaForm.style.display = 'none';
+    if(regCard)   regCard.style.display   = 'none';
+    if(!lote) { if(panel) panel.style.display='none'; return; }
+
+    var cfg = (lsGet('plan_config',{})[lote]) || {};
+    var rd  = RONDAS_DATA[lote] || {};
+    var ld  = LOTES_DATA[lote]  || {};
+
+    sv('pe-area',      cfg.area    || ld.area    || '');
+    sv('pe-palmas',    cfg.palmas  || ld.palmas  || '');
+    // Usar guardado o calcular del Excel redondeado a 2 decimales
+    var kgpalVal = cfg.kgpal || 0;
+    if(!kgpalVal) {
+      var planEx = PLAN_PALMAGRANDE.find(function(p){ return p.lote===lote; }) || {};
+      var palEx  = (LOTES_DATA[lote]||{}).palmas || 0;
+      if(planEx.totalKg && palEx) kgpalVal = Math.round(planEx.totalKg/palEx*100)/100;
+    }
+    sv('pe-kgpal-año', kgpalVal || '');
+    sv('pe-rondas',    cfg.rondas  || rd.total_rondas || 3);
+
+    var fertSel = g('pe-fertilizante');
+    var fert    = cfg.fertilizante || '';
+    if(fertSel) {
+      var opts = Array.from(fertSel.options).map(function(o){return o.value;});
+      if(fert && opts.indexOf(fert)!==-1) fertSel.value = fert;
+      else if(fert) { fertSel.value='__otro__'; sv('pe-fertilizante-otro', fert); }
+      else fertSel.value = '';
+      var ow = g('pe-otro-wrap');
+      if(ow) ow.style.display = fertSel.value==='__otro__' ? 'block':'none';
+    }
+
+    if(panel) panel.style.display = 'block';
+    window.calcPlanBase();
+    window.generarFilasRondas();
+    // Mostrar card de ejecución si ya hay plan guardado
+    var cfgSaved = (lsGet('plan_config',{})[lote]) || {};
+    var regCard  = g('plan-registro-card');
+    if(regCard) {
+      if(cfgSaved.rondas) {
+        regCard.style.display = 'block';
+        var selR = g('plan-ronda');
+        if(selR) {
+          selR.innerHTML = '<option value="">— Seleccionar ronda —</option>';
+          var nR2 = cfgSaved.rondas || 3;
+          var execL = (lsGet('plan_rondas',{})[lote]) || {};
+          for(var k=1; k<=nR2; k++) {
+            var exK  = execL['ronda'+k] || {};
+            var estK = exK.estado || 'pendiente';
+            var icK  = estK==='ejecutado'?'✅':estK==='en_curso'?'🔄':'⏳';
+            var bK   = (cfgSaved.rondas_dosis && cfgSaved.rondas_dosis['r'+k+'_b'])  || 0;
+            var kK   = (cfgSaved.rondas_dosis && cfgSaved.rondas_dosis['r'+k+'_kg']) || 0;
+            var dK   = (cfgSaved.rondas_dosis && cfgSaved.rondas_dosis['r'+k+'_dpal']) || 0;
+            selR.innerHTML += '<option value="'+k+'">'+icK+' Ronda '+k
+              +' — '+bK+' blt · '+kK.toLocaleString('es-CO')+' kg'
+              +(dK?' · '+dK+' kg/pal':'')+'</option>';
+          }
+        }
+      } else {
+        regCard.style.display = 'none';
+      }
+    }
+  };
+
+  window.calcPlanBase = function() {
+    var palmas  = parseFloat(gv('pe-palmas'))    || 0;
+    var kgpal   = parseFloat(gv('pe-kgpal-año')) || 0;
+    var area    = parseFloat(gv('pe-area'))       || 0;
+    var nRondas = parseInt(gv('pe-rondas'))       || 1;
+    var totalKg     = palmas * kgpal;
+    var totalBultos = totalKg / 50;
+    var bxRonda     = nRondas > 0 ? totalBultos / nRondas : 0;
+    setText('pe-total-kg',     totalKg>0     ? totalKg.toLocaleString('es-CO',{maximumFractionDigits:1})+' kg' : '—');
+    setText('pe-dosis-ha',     area>0&&totalKg>0 ? (totalKg/area).toFixed(2)+' kg/ha' : '—');
+    setText('pe-total-bultos', totalBultos>0 ? totalBultos.toFixed(1)+' bultos totales' : '—');
+    setText('pe-bultos-ronda', bxRonda>0     ? bxRonda.toFixed(1)+' blt/ronda (sugerido)' : '—');
+    var ow = g('pe-otro-wrap');
+    if(ow) ow.style.display = gv('pe-fertilizante')==='__otro__' ? 'block':'none';
+    generarFilasRondas();
+  };
+
+  
+  window.generarFilasRondas = function() {
+    var lote    = gv('plan-lote');
+    var nRondas = parseInt(gv('pe-rondas')) || 3;
+    var cfg     = (lsGet('plan_config',{})[lote]) || {};
+    var rd      = RONDAS_DATA[lote] || {};
+    var cont    = g('plan-rondas-editor');
+    if(!cont) return;
+
+    var palmas  = parseFloat(gv('pe-palmas'))    || parseFloat(cfg.palmas) || 0;
+    var kgpal   = parseFloat(gv('pe-kgpal-año')) || parseFloat(cfg.kgpal)  || 0;
+    var totalKg = palmas * kgpal;
+    // Dosis sugerida por ronda = kg/palma/año ÷ rondas
+    var dosisSug = nRondas > 0 ? Math.round(kgpal/nRondas * 1000)/1000 : 0;
+
+    cont.innerHTML = '';
+    for(var i = 1; i <= nRondas; i++) {
+      // Prioridad: guardado → calcular desde Excel → sugerido
+      var savedDosis = (cfg.rondas_dosis && cfg.rondas_dosis['r'+i+'_dpal']) || 0;
+      var rBase      = (rd.rondas && rd.rondas[i-1]) ? rd.rondas[i-1] : {};
+      var defDosis   = savedDosis > 0 ? savedDosis
+                     : (rBase.bultos_prog > 0 && palmas > 0
+                        ? Math.round(rBase.bultos_prog*50/palmas*1000)/1000
+                        : dosisSug);
+      var defBultos  = palmas > 0 && defDosis > 0 ? Math.round(palmas*defDosis/50*10)/10 : 0;
+      var defKg      = Math.round(defBultos * 50);
+
+      var exec    = ((lsGet('plan_rondas',{})[lote])||{})['ronda'+i] || {};
+      var estIcon = exec.estado==='ejecutado'?'✅':exec.estado==='en_curso'?'🔄':'⏳';
+      var bAplic  = exec.bultos_aplic || 0;
+      var pct     = defBultos>0 && bAplic>0 ? Math.round(bAplic/defBultos*100) : 0;
+
+      var row = document.createElement('div');
+      row.style.cssText = 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;';
+      row.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+          '<span style="font-size:13px;font-weight:700;color:#fff">'+estIcon+' Ronda '+i+'</span>'+
+          (bAplic>0 ? '<span style="font-size:10px;color:rgba(74,222,128,0.8)">Aplic: '+bAplic+' blt ('+pct+'%)</span>'
+                    : (exec.fecha ? '<span style="font-size:10px;color:rgba(255,255,255,0.3)">'+fmtD(exec.fecha)+'</span>' : ''))+
+        '</div>'+
+
+        // ── Campo principal: kg/palma ────────────────────────────────
+        '<div style="margin-bottom:10px">'+
+          '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(251,191,36,0.8);margin-bottom:5px">Dosis kg / palma (editar aquí)</div>'+
+          '<input type="number" id="pe-r'+i+'-dpal" value="'+defDosis+'" min="0" step="0.001"'+
+          ' oninput="calcDesdeDosisPalma('+i+')"'+
+          ' style="width:100%;background:rgba(0,0,0,0.5);border:2px solid rgba(251,191,36,0.5);border-radius:8px;padding:11px 14px;color:#fbbf24;font-size:16px;font-weight:800;font-family:inherit;-webkit-text-fill-color:#fbbf24"/>'+
+        '</div>'+
+
+        // ── Resultados calculados ────────────────────────────────────
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+          '<div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:10px 12px;text-align:center">'+
+            '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Bultos</div>'+
+            '<div id="pe-r'+i+'-b" style="font-size:18px;font-weight:800;color:#fff;font-family:monospace">'+defBultos+'</div>'+
+          '</div>'+
+          '<div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:10px 12px;text-align:center">'+
+            '<div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">kg</div>'+
+            '<div id="pe-r'+i+'-kg" style="font-size:18px;font-weight:800;color:rgba(74,222,128,0.8);font-family:monospace">'+defKg.toLocaleString()+'</div>'+
+          '</div>'+
+        '</div>';
+      cont.appendChild(row);
+    }
+    validarSumaRondas();
+  };
+
+  
+  window.calcDesdeDosisPalma = function(i) {
+    var dpal   = parseFloat(document.getElementById('pe-r'+i+'-dpal').value) || 0;
+    var palmas = parseFloat(gv('pe-palmas')) || 0;
+    var bultos = palmas>0 && dpal>0 ? Math.round(palmas*dpal/50*10)/10 : 0;
+    var kg     = Math.round(bultos*50);
+    var bEl = document.getElementById('pe-r'+i+'-b');
+    var kEl = document.getElementById('pe-r'+i+'-kg');
+    if(bEl) bEl.textContent = bultos;
+    if(kEl) kEl.textContent = kg > 0 ? kg.toLocaleString('es-CO') : '0';
+    validarSumaRondas();
+  };
+
+  window.syncBFromKg = function(i) {
+    // kept for compatibility - not used in new UI
+  };
+
+  function validarSumaRondas() {
+    var nRondas = parseInt(gv('pe-rondas')) || 0;
+    var palmas  = parseFloat(gv('pe-palmas'))    || 0;
+    var kgpal   = parseFloat(gv('pe-kgpal-año')) || 0;
+    var totalKg = palmas * kgpal;
+    var check   = g('plan-suma-check');
+    if(!check || !nRondas || !totalKg) { if(check) check.style.display='none'; return; }
+    // Sum kg/palma across rondas — should equal kgpal/año
+    var sumaDosis = 0;
+    for(var i=1; i<=nRondas; i++) {
+      var el = document.getElementById('pe-r'+i+'-dpal');
+      sumaDosis += el ? (parseFloat(el.value)||0) : 0;
+    }
+    var diff = Math.abs(Math.round(sumaDosis*1000)/1000 - Math.round(kgpal*1000)/1000);
+    check.style.display = 'block';
+    var base = 'padding:10px 14px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:14px;font-family:monospace;display:block;';
+    if(diff < 0.01) {
+      check.style.cssText = base+'background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ade80;';
+      check.textContent = '✓ OK: '+sumaDosis.toFixed(3)+' kg/pal suma = '+kgpal+' kg/pal/año';
+    } else if(diff <= 0.05) {
+      check.style.cssText = base+'background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24;';
+      check.textContent = '⚠ Dif: '+diff.toFixed(3)+' kg/pal  |  Suma='+sumaDosis.toFixed(3)+' vs Plan='+kgpal;
+    } else {
+      check.style.cssText = base+'background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:#f87171;';
+      check.textContent = '✕ Suma rondas: '+sumaDosis.toFixed(3)+' kg/pal ≠ Plan: '+kgpal+' kg/pal/año  (dif: '+diff.toFixed(3)+')';
+    }
+  }
+
+  
+  window.guardarPlanLote = function() {
+    var lote    = gv('plan-lote');
+    var area    = parseFloat(gv('pe-area'))       || 0;
+    var palmas  = parseFloat(gv('pe-palmas'))     || 0;
+    var kgpal   = parseFloat(gv('pe-kgpal-año'))  || 0;
+    var nRondas = parseInt(gv('pe-rondas'))        || 0;
+    var fertSel = gv('pe-fertilizante');
+    var fert    = fertSel==='__otro__' ? gv('pe-fertilizante-otro').trim() : fertSel;
+
+    if(!lote)    return toast('Seleccione un lote','error');
+    if(!fert)    return toast('Seleccione el fertilizante','error');
+    if(!palmas)  return toast('Ingrese el número de palmas','error');
+    if(!kgpal)   return toast('Ingrese kg/palma/año','error');
+    if(!nRondas) return toast('Seleccione número de rondas','error');
+
+    var totalKg     = palmas * kgpal;
+    var rondasDosis = {};
+
+    for(var i = 1; i <= nRondas; i++) {
+      // Leer dosis kg/palma del INPUT (pe-r1-dpal)
+      var elDpal = document.getElementById('pe-r'+i+'-dpal');
+      var dpal   = elDpal ? (parseFloat(elDpal.value) || 0) : 0;
+      var b      = palmas > 0 && dpal > 0 ? Math.round(palmas*dpal/50*10)/10 : 0;
+      var kg     = Math.round(b * 50);
+      rondasDosis['r'+i+'_dpal'] = dpal;
+      rondasDosis['r'+i+'_b']    = b;
+      rondasDosis['r'+i+'_kg']   = kg;
+    }
+
+    var configs = lsGet('plan_config', {});
+    configs[lote] = {
+      area, palmas, kgpal, rondas: nRondas,
+      fertilizante: fert,
+      total_kg: Math.round(totalKg*10)/10,
+      dosis_ha: area > 0 ? Math.round(totalKg/area*100)/100 : 0,
+      rondas_dosis: rondasDosis,
+      _ts: ahora()
+    };
+    lsSet('plan_config', configs);
+
+    // Actualizar RONDAS_DATA en memoria
+    if(!RONDAS_DATA[lote]) RONDAS_DATA[lote] = {};
+    RONDAS_DATA[lote].total_rondas = nRondas;
+    RONDAS_DATA[lote].rondas = [];
+    for(var j = 1; j <= nRondas; j++) {
+      var bJ   = rondasDosis['r'+j+'_b']    || 0;
+      var kgJ  = rondasDosis['r'+j+'_kg']   || 0;
+      var dpJ  = rondasDosis['r'+j+'_dpal'] || 0;
+      var exJ  = ((lsGet('plan_rondas',{})[lote])||{})['ronda'+j] || {};
+      RONDAS_DATA[lote].rondas.push({
+        num: j, bultos_prog: bJ, kg_prog: kgJ, dosis_palma: dpJ,
+        bultos_aplic: exJ.bultos_aplic||0, kg_aplic: exJ.kg_aplic||0,
+        fecha: exJ.fecha||'', metodo: exJ.metodo||'',
+        aplicador: exJ.aplicador||'', estado: exJ.estado||'pendiente'
+      });
+    }
+
+    toast('Plan guardado — '+lote);
+
+    // Mostrar y actualizar selector de rondas para ejecución
+    var regCard = g('plan-registro-card');
+    var sel     = g('plan-ronda');
+    if(regCard) regCard.style.display = 'block';
+    if(sel) {
+      sel.innerHTML = '<option value="">— Seleccionar ronda —</option>';
+      var execLote = (lsGet('plan_rondas',{})[lote]) || {};
+      for(var k = 1; k <= nRondas; k++) {
+        var exK   = execLote['ronda'+k] || {};
+        var estK  = exK.estado || 'pendiente';
+        var iconK = estK==='ejecutado'?'✅':estK==='en_curso'?'🔄':'⏳';
+        var bK    = rondasDosis['r'+k+'_b']    || 0;
+        var kgK   = rondasDosis['r'+k+'_kg']   || 0;
+        var dpK   = rondasDosis['r'+k+'_dpal'] || 0;
+        sel.innerHTML += '<option value="'+k+'">'
+          + iconK+' Ronda '+k
+          +' — '+bK.toFixed(1)+' blt'
+          +' · '+kgK.toLocaleString('es-CO')+' kg'
+          +(dpK ? ' · '+dpK+' kg/pal' : '')
+          +'</option>';
+      }
+    }
+    // Ocultar form de ejecución si estaba abierto
+    var rf = g('plan-ronda-form');
+    if(rf) rf.style.display = 'none';
+
+    window.generarFilasRondas();
+    renderPlan();
+  };
+
+  window.planSeleccionarRonda = function() {
+    var lote = gv('plan-lote');
+    var rNum = parseInt(gv('plan-ronda'));
+    var form = g('plan-ronda-form');
+    if(!lote || !rNum) { if(form) form.style.display='none'; return; }
+
+    var cfg   = (lsGet('plan_config',{})[lote]) || {};
+    var rd    = RONDAS_DATA[lote] || {};
+    var rBase = (rd.rondas && rd.rondas[rNum-1]) ? rd.rondas[rNum-1] : {};
+    var exec  = ((lsGet('plan_rondas',{})[lote])||{})['ronda'+rNum] || {};
+
+    // Leer dosis y bultos programados con claves correctas
+    var dpalR  = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_dpal']) || 0;
+    var bProg  = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_b'])    || rBase.bultos_prog || 0;
+    var kgProg = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_kg'])   || rBase.kg_prog     || Math.round(bProg*50);
+    var palmas = cfg.palmas || (LOTES_DATA[lote]||{}).palmas || 0;
+
+    // Mostrar resumen programado
+    var progTxt = bProg > 0
+      ? bProg+' bultos  ·  '+kgProg.toLocaleString('es-CO')+' kg'+(dpalR>0?' · '+dpalR+' kg/pal':'')
+      : '— (guarde el plan primero)';
+    sv('pr-bultos-prog', progTxt);
+
+    sv('pr-bultos-aplic', exec.bultos_aplic || '');
+    sv('pr-fecha',        exec.fecha        || '');
+    sv('pr-metodo',       exec.metodo       || '');
+    sv('pr-aplicador',    exec.aplicador    || '');
+    sv('pr-obs',          exec.obs          || '');
+
+    var est = exec.estado || 'pendiente';
+    document.querySelectorAll('input[name="pr-estado"]').forEach(function(r){ r.checked = r.value===est; });
+
+    if(form) { form.style.display='block'; form.scrollIntoView({behavior:'smooth',block:'start'}); }
+    window.calcRonda();
+  };
+  window.calcRonda = function() {
+    var lote   = gv('plan-lote');
+    var rNum   = parseInt(gv('plan-ronda'));
+    var bAplic = parseFloat(gv('pr-bultos-aplic')) || 0;
+    var cfg    = (lsGet('plan_config',{})[lote]) || {};
+    var rd     = RONDAS_DATA[lote] || {};
+    var rBase  = (rd.rondas && rd.rondas[rNum-1]) ? rd.rondas[rNum-1] : {};
+
+    var kgProg = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_kg'])
+                 || rBase.kg_prog || 0;
+    var kgAplic = bAplic * 50;
+    var pct     = kgProg > 0 ? Math.round(kgAplic/kgProg*100) : 0;
+
+    setText('pr-kg-prog',  kgProg  > 0 ? kgProg.toLocaleString('es-CO')+' kg' : '—');
+    setText('pr-kg-aplic', kgAplic > 0 ? kgAplic.toLocaleString('es-CO')+' kg' : '—');
+    setText('pr-avance',   kgProg  > 0 ? pct+'%' : '—');
+  };
+  window.guardarRonda = function() {
+    var lote = gv('plan-lote');
+    var rNum = parseInt(gv('plan-ronda'));
+    if(!lote || !rNum) return toast('Seleccione lote y ronda','error');
+
+    var bAplic = parseFloat(gv('pr-bultos-aplic')) || 0;
+    var cfg    = (lsGet('plan_config',{})[lote]) || {};
+    var kgProg = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_kg']) || 0;
+    var bProg  = (cfg.rondas_dosis && cfg.rondas_dosis['r'+rNum+'_b'])  || 0;
+    var estEl  = document.querySelector('input[name="pr-estado"]:checked');
+    var estado = estEl ? estEl.value : 'pendiente';
+
+    var local = lsGet('plan_rondas',{});
+    if(!local[lote]) local[lote] = {};
+    local[lote]['ronda'+rNum] = {
+      bultos_prog:  bProg,
+      kg_prog:      kgProg,
+      bultos_aplic: bAplic,
+      kg_aplic:     Math.round(bAplic*50),
+      fecha:        gv('pr-fecha'),
+      metodo:       gv('pr-metodo'),
+      aplicador:    gv('pr-aplicador'),
+      obs:          gv('pr-obs'),
+      estado:       estado,
+      _sync:        false,
+      _ts:          ahora()
+    };
+    lsSet('plan_rondas', local);
+    toast('Ronda '+rNum+' registrada — '+lote);
+
+    // Actualizar selector de rondas
+    var nRondas = cfg.rondas || 3;
+    var sel = g('plan-ronda');
+    if(sel) {
+      sel.innerHTML = '<option value="">— Seleccionar ronda —</option>';
+      for(var k=1; k<=nRondas; k++) {
+        var ex   = (local[lote]||{})['ronda'+k] || {};
+        var est2 = ex.estado || 'pendiente';
+        var icon = est2==='ejecutado'?'✅':est2==='en_curso'?'🔄':'⏳';
+        var bk   = (cfg.rondas_dosis && cfg.rondas_dosis['r'+k+'_b'])  || 0;
+        var kk   = (cfg.rondas_dosis && cfg.rondas_dosis['r'+k+'_kg']) || 0;
+        sel.innerHTML += '<option value="'+k+'">'+icon+' Ronda '+k+' — '+bk+' blt ('+kk.toLocaleString('es-CO')+' kg)</option>';
+      }
+    }
+    // Refrescar editor y ocultar form
+    generarFilasRondas();
+    var form = g('plan-ronda-form');
+    if(form) form.style.display='none';
+    if(sel)  sel.value = '';
+    renderPlan();
+  };
+
+  window.guardarNovedad = function() {
+    var lote = gv('nov-lote'), tipo = gv('nov-tipo');
+    var desc = gv('nov-desc').trim(), resp = gv('nov-resp').trim();
+    var resEl = document.querySelector('input[name="nov-res"]:checked');
+    var res = resEl ? resEl.value : 'No';
+    if(!lote) return toast('Seleccione lote','error');
+    if(!tipo) return toast('Seleccione tipo','error');
+    if(!desc) return toast('Ingrese descripción','error');
+    if(!resp) return toast('Ingrese responsable','error');
+    lsPush('novedades',{ id:genId('NOV'), fecha:gv('nov-fecha'), lote:lote, tipo:tipo,
+      descripcion:desc, responsable:resp, resuelto:res, _sync:false, _ts:ahora() });
+    toast('Novedad registrada: '+tipo);
+    resetFields(['nov-lote','nov-tipo','nov-desc','nov-resp']);
+    renderNovs();
+  };
+
+  window.sincronizarTodo = async function() {
+    if(!gasUrl) return toast('Configure la URL de Apps Script primero','warning');
+    if(!navigator.onLine) return toast('Sin conexión a internet','warning');
+    var btn=g('btn-sync'); if(btn){btn.disabled=true;btn.textContent='Sincronizando...';}
+    var log=g('sync-log'); if(log) log.innerHTML='';
+    var addLog=function(msg,ok){if(log)log.innerHTML+='<div class="ll '+(ok?'ok':'err')+'">'+new Date().toLocaleTimeString()+' — '+msg+'</div>';};
+    var sheets=[
+      {key:'salidas',sheet:'Salidas'},{key:'aplicaciones',sheet:'Aplicaciones'},
+      {key:'devoluciones',sheet:'Devoluciones'},{key:'entradas',sheet:'Entradas'},
+      {key:'ajustes',sheet:'Ajustes'},{key:'novedades',sheet:'Novedades'}
+    ];
+    for(var i=0;i<sheets.length;i++){
+      var s=sheets[i];
+      var rows=lsGet(s.key,[]).filter(function(r){return !r._sync;});
+      if(!rows.length){addLog(s.sheet+': sin pendientes',true);continue;}
+      try{
+        var r=await fetch(gasUrl,{method:'POST',body:JSON.stringify({action:'append',sheet:s.sheet,rows:rows}),headers:{'Content-Type':'text/plain'}});
+        var j=await r.json();
+        if(j.status==='ok'){
+          lsSet(s.key,lsGet(s.key,[]).map(function(r){return Object.assign({},r,{_sync:true});}));
+          addLog(s.sheet+': '+rows.length+' fila(s) OK',true);
+        }else{addLog(s.sheet+': error — '+(j.message||'?'),false);}
+      }catch(e){addLog(s.sheet+': falla — '+e.message,false);}
+    }
+    if(btn){btn.disabled=false;btn.textContent='Sincronizar ahora →';}
+    actualizarOnline(); renderSync(); toast('Sincronización completada');
+  };
+
+  window.saveGasUrl = function() {
+    var url=gv('gas-url').trim();
+    if(!url) return toast('Ingrese una URL válida','error');
+    gasUrl=url; localStorage.setItem('fpg_gas',url);
+    toast('URL guardada correctamente');
+  };
+
+  function renderNovs() {
+    renderList('nov-list', lsGet('novedades',[]).slice().reverse(), function(r){
+      return '<div class="rec'+(r._sync?'':' pending')+'">' +
+        '<div class="rec-top"><span class="rec-main">'+r.tipo+' — '+r.lote+'</span><span class="badge '+(r.resuelto==='Sí'?'b-green':'b-red')+'">'+(r.resuelto==='Sí'?'Resuelto':'Pendiente')+'</span></div>' +
+        '<div class="rec-sub">'+(r.descripcion||'').slice(0,75)+((r.descripcion||'').length>75?'..':'')+'</div>' +
+        '<div class="rec-meta">'+(r.responsable||'—')+' · '+fmtD(r.fecha)+'</div>' +
+        '</div>';
+    });
+  }
+
+  /* ── Sync ───────────────────────────── */
+  function renderSync() {
+    var keys=['salidas','aplicaciones','devoluciones','entradas','ajustes','plan','novedades'];
+    var cnts=g('sync-cnts');
+    if(cnts) cnts.innerHTML = keys.map(function(k){
+      var pend=lsGet(k,[]).filter(function(r){ return !r._sync; }).length;
+      return '<div class="cnt-pill'+(pend>0?' pend':'')+'">'+k+': '+lsGet(k,[]).length+' · '+pend+' pend.</div>';
+    }).join('');
+    var st=g('sync-txt'); if(st) st.textContent=navigator.onLine?'✓ Conexión disponible':'⚠ Sin conexión';
+  };
+
+  
+
+  /* ── Utils ──────────────────────────── */
+  function sumar(arr, campo) {
+    return (arr||[]).reduce(function(s,r){ return s+(parseFloat(r[campo])||0); }, 0);
+  }
+
+  function setText(id, val) { var e=g(id); if(e) e.textContent=val; }
+
+  function resetFields(ids) {
+    ids.forEach(function(id){
+      var e=g(id);
+      if(!e) return;
+      if(e.tagName==='SELECT') e.selectedIndex=0;
+      else e.value='';
+    });
+  }
+
+  function renderList(id, items, fn) {
+    var el=g(id);
+    if(!el) return;
+    if(!items||items.length===0) {
+      el.innerHTML='<div class="empty"><div class="empty-icon">◌</div>Sin registros aún</div>';
+    } else {
+      el.innerHTML=items.map(fn).join('');
+    }
+  }
+
+  window.toggleOtroSup = function() {
+    var sel = g('sal-sup');
+    var inp = g('sal-sup-otro');
+    if(!sel || !inp) return;
+    if(sel.value === '__otro__') {
+      inp.style.display = 'block';
+      inp.focus();
+    } else {
+      inp.style.display = 'none';
+      inp.value = '';
+    }
+  };
+
+  window.autoFillLote = function(prefix) {
+    var lote = gv(prefix+'-lote');
+    var data = LOTES_DATA[lote];
+    if(!data) return;
+    if(prefix==='apl'){
+      if(!gv('apl-ha') || gv('apl-ha')==='0') sv('apl-ha', data.area);
+      if(!gv('apl-palm') || gv('apl-palm')==='0') sv('apl-palm', data.palmas);
+    }
+    if(prefix==='plan'){
+      if(!gv('plan-ha') || gv('plan-ha')==='0') sv('plan-ha', data.area);
+      if(!gv('plan-palm') || gv('plan-palm')==='0') sv('plan-palm', data.palmas);
+      // Also auto-fill from plan programado
+      var planData = PLAN_PALMAGRANDE.find(function(p){ return p.lote===lote; });
+      if(planData && planData.totalKg > 0){
+        // Select product if not set
+      }
+      calcPlan();
+    }
+    if(prefix==='apl') calcApl();
+  };
+
+
+const PERMISOS = {
+  almacen: {
+    nav:      ['dashboard','salida','devolucion','inventario','sync'],
+    crear:    ['salida','devolucion','inventario-entrada'],
+    verOnly:  ['inventario-stock'],
+    ocultar:  ['aplicacion','plan','novedades','inventario-ajuste']
+  },
+  supervisor: {
+    nav:      ['dashboard','aplicacion','devolucion','inventario','plan','novedades','sync'],
+    crear:    ['aplicacion','devolucion','plan','novedades'],
+    verOnly:  ['inventario-stock'],
+    ocultar:  ['salida','inventario-entrada','inventario-ajuste']
+  },
+  direccion: {
+    nav:      ['dashboard','salida','aplicacion','devolucion','inventario','plan','novedades','sync'],
+    crear:    ['inventario-ajuste'],
+    verOnly:  ['salida','aplicacion','devolucion','inventario-stock','inventario-entrada','plan','novedades'],
+    ocultar:  []
+  },
+  consulta: {
+    nav:      ['dashboard','salida','aplicacion','devolucion','inventario','plan','novedades'],
+    crear:    [],
+    verOnly:  ['salida','aplicacion','devolucion','inventario-stock','plan','novedades'],
+    ocultar:  ['inventario-entrada','inventario-ajuste','sync']
+  }
+};
+
+window.aplicarPermisos = function(rol) {
+  var p = PERMISOS[rol];
+  if(!p) return;
+
+  // 1. Sidebar: ocultar/mostrar nav items
+  document.querySelectorAll('.nav-item[data-mod]').forEach(function(a){
+    var mod = a.getAttribute('data-mod');
+    a.style.display = p.nav.indexOf(mod) !== -1 ? '' : 'none';
+  });
+
+  // 2. Formularios: ocultar botones de guardar y campos de entrada
+  //    según si el módulo es verOnly para este rol
+  var todosModulos = ['salida','aplicacion','devolucion','plan','novedades'];
+  todosModulos.forEach(function(mod){
+    var esVerOnly = p.verOnly.indexOf(mod) !== -1;
+    var oculto    = p.ocultar.indexOf(mod) !== -1;
+    var section   = document.getElementById('mod-'+mod);
+    if(!section) return;
+
+    if(oculto) {
+      section.style.display = 'none';
+      return;
+    }
+
+    // Ocultar el form-card (formulario) si es verOnly
+    var formCard = section.querySelector('.form-card');
+    if(formCard) formCard.style.display = esVerOnly ? 'none' : '';
+  });
+
+  // 3. Inventario tabs: ocultar entrada/ajuste según rol
+  var tabEntrada = document.querySelector('.inv-tab[onclick*="entrada"]');
+  var tabAjuste  = document.querySelector('.inv-tab[onclick*="ajuste"]');
+  var puedeEntrada = p.crear.indexOf('inventario-entrada') !== -1;
+  var puedeAjuste  = p.crear.indexOf('inventario-ajuste')  !== -1;
+  if(tabEntrada) tabEntrada.style.display = puedeEntrada ? '' : 'none';
+  if(tabAjuste)  tabAjuste.style.display  = puedeAjuste  ? '' : 'none';
+
+  // 4. Sync: ocultar botón sincronizar para consulta
+  var btnSync = document.getElementById('btn-sync');
+  if(btnSync) btnSync.style.display = p.crear.length===0 && p.nav.indexOf('sync')===-1 ? 'none' : '';
+
+  // 5. Dashboard: marcar rol en data attribute para lógica futura
+  document.getElementById('screen-app').setAttribute('data-rol', rol);
+}
+
+  /* Registrar service worker */
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+
+}); /* fin DOMContentLoaded */
+
+</script>
+</body>
+</html>
